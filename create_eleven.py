@@ -9,11 +9,11 @@ from lib.const import Const
 
 def main():
     drive = Drive()
-
-    offense_stats = _aggregate_offense(drive)
-    defense_stats = _aggregate_defense(drive)
     
-    league = _munge_stats(offense_stats, defense_stats)
+    league = _league_stats(drive)
+    
+    for team in league.keys():
+        _upload_stats(team, league[team])
 
 
 def _aggregate_defense(drive):
@@ -68,7 +68,9 @@ def _aggregate_offense(drive):
     
     return result
 
-def _munge_stats(offense_stats, defense_stats):
+def _league_stats(drive):
+    defense_stats = _aggregate_defense(drive)
+    offense_stats = _aggregate_offense(drive)
     result = {}
 
     # Offense
@@ -100,6 +102,34 @@ def _munge_stats(offense_stats, defense_stats):
         team['rush'] = defense_stats[name]['rush']
     
     return result
+
+def _upload_stats(team_name, stats):
+    query = Team.all()
+    query.filter('name =', team_name)
+    result = query.fetch(1)
+
+    if len(result) > 0:
+        for team in result:
+            team.year = Const.LAST_YEAR
+            team.offense_passing = stats['offense']['pass']
+            team.offense_rushing = stats['offense']['rush']
+            team.offense_first_down = stats['offense']['first_down']
+            team.defense_passing = stats['defense']['pass']
+            team.defense_rushing = stats['defense']['rush']
+            team.defense_first_down = stats['defense']['first_down']
+
+            team.put()
+    else:
+        team = Team(name = team_name,
+                    year = Const.LAST_YEAR,
+                    offense_passing = stats['offense']['pass'],
+                    offense_rushing = stats['offense']['rush'],
+                    offense_first_down = stats['offense']['first_down'],
+                    defense_passing = stats['defense']['pass'],
+                    defense_rushing = stats['defense']['rush'],
+                    defense_first_down = stats['defense']['first_down'])
+
+        team.put()
 
 if __name__ == "__main__":
     main()
