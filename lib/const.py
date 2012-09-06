@@ -5,8 +5,9 @@ class Const:
     DEFENSE_PAGE_ONE = 'Defense1'
     DEFENSE_PAGE_TWO = 'Defense2'    
 
-    START_ROW = 2
+    LAST_YEAR = 2011
 
+    START_ROW = 2
     # Column numbers
     FIRST_DOWN_COL = 3
     NAME_COL = 2
