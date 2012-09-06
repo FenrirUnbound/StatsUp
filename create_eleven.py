@@ -12,7 +12,9 @@ def main():
 
     offense_stats = _aggregate_offense(drive)
     defense_stats = _aggregate_defense(drive)
-    logging.info(defense_stats)
+    
+    league = _munge_stats(offense_stats, defense_stats)
+
 
 def _aggregate_defense(drive):
     result = {}
@@ -36,7 +38,7 @@ def _aggregate_defense(drive):
         if name not in result:
             result[name] = {}
 
-        result[name]['first_downs'] = int(stats[Const.FIRST_DOWN_COL][i])
+        result[name]['first_down'] = int(stats[Const.FIRST_DOWN_COL][i])
     
     return result
 
@@ -62,7 +64,40 @@ def _aggregate_offense(drive):
         if name not in result:
             result[name] = {}
 
-        result[name]['first_downs'] = int(stats[Const.FIRST_DOWN_COL][i])
+        result[name]['first_down'] = int(stats[Const.FIRST_DOWN_COL][i])
+    
+    return result
+
+def _munge_stats(offense_stats, defense_stats):
+    result = {}
+
+    # Offense
+    for name in offense_stats.keys():
+        if name not in result:
+            result[name] = {}
+
+        if 'offense' not in result[name]:
+            result[name]['offense'] = {}
+
+        team = result[name]['offense']
+
+        team['first_down'] = offense_stats[name]['first_down']
+        team['pass'] = offense_stats[name]['pass']
+        team['rush'] = offense_stats[name]['rush']
+
+    # Defense
+    for name in defense_stats.keys():
+        if name not in result:
+            result[name] = {}
+
+        if 'defense' not in result[name]:
+            result[name]['defense'] = {}
+
+        team = result[name]['defense']
+        
+        team['first_down'] = defense_stats[name]['first_down']
+        team['pass'] = defense_stats[name]['pass']
+        team['rush'] = defense_stats[name]['rush']
     
     return result
 
