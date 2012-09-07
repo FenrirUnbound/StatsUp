@@ -12,6 +12,7 @@ from models.team import Team
 class MainPage(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
         
         result = self._fetch_stats()
         self.response.out.write(json.dumps(result, indent = 4))
