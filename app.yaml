@@ -5,6 +5,8 @@ api_version: 1
 threadsafe: false
 
 handlers:
+- url: /stats
+  script: stats.py
 - url: /createEleven
   script: create_eleven.py
 - url: /favicon\.ico
