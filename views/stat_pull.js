@@ -1,4 +1,5 @@
-var stats = {};
+var calcCounter = 0,
+    stats = {};
 
 var PPU_FIRST_DOWN = 1.140160643,
     PPU_PASS = 0.096563805,
@@ -29,12 +30,23 @@ $(document).ready(function() {
         homeTeam = $('#homeList').find('option:selected').text(),
         result;
 
-    result = estimateTotal_(stats[homeTeam], stats[awayTeam]);
-    
-    console.log('result:  ' + result);
+    result = {
+      'estTotalScore': estimateTotal_(stats[homeTeam], stats[awayTeam])
+    }
 
-    //engageMatch_(homeTeam, awayTeam);
+    displayResults_(result);
   });
+});
+
+var displayResults_ = (function(result) {
+    if(++calcCounter)
+      $('#results').removeClass('hidden');
+
+    $('#results > ol').empty().html(
+      $.render.singleResult({
+        'value': result.estTotalScore
+      })
+    );
 });
 
 var estimateTotal_ = (function(firstTeam, secondTeam) {
@@ -50,8 +62,6 @@ var estimateTotal_ = (function(firstTeam, secondTeam) {
       firstOffense = firstTeam.offense,
       secondDefense = secondTeam.defense,
       secondOffense = secondTeam.offense;
-
-    console.log(firstDefense);
 
   avgDefenseFirstDown = (firstDefense['first_down']/TOTAL_SEASON_GAMES + 
       secondDefense['first_down']/TOTAL_SEASON_GAMES)/2;
@@ -76,24 +86,22 @@ var estimateTotal_ = (function(firstTeam, secondTeam) {
     return avgDefense + avgOffense;
 });
 
-var engageMatch_ = (function(firstTeamName, secondTeamName) {
-    var firstTeam = stats[firstTeamName]['offense'],
-        secondTeam = stats[secondTeamName]['offense'],
-        values = {};
-    
-    $('#results').removeClass('hidden');
-    $('#results > ol').empty();
-    $('#offenseResults').tmpl(values).appendTo('#results');
-});
-
 var loadData_ = (function(data) {
-    var element = '',
-        teams = Object.keys(stats).sort().reverse();        
+  var element = '',
+      teams = Object.keys(stats).sort().reverse();        
 
-    for(var i = teams.length - 1; i >= 0; i -= 1) {
-        element += '<option value="' + i + '">' + teams[i] + '</option>';
-    }
-    
-    $('#homeList').append(element);
-    $('#awayList').append(element);
+  $.templates({
+    listOption: '#listOption',
+    singleResult: '#singleResult'    
+  });
+
+  for(var i = teams.length - 1; i >= 0; i -= 1) {
+    element += $.render.listOption({
+      'name': teams[i],
+      'value': teams.length-i
+    });
+  }
+  
+  $('#homeList').html(element);
+  $('#awayList').html(element);
 });
