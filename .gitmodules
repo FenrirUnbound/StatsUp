@@ -1,0 +1,3 @@
+[submodule "views/jsrender"]
+	path = views/jsrender
+	url = git@github.com:BorisMoore/jsrender.git
