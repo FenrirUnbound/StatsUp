@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>NFL Stats</title>
+        <link rel="stylesheet" type="text/css" href="./layout.css" media="screen">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">      
+    </head>
+    <body>        
+        <form>
+            <fieldset>
+                <legend>Select Matchup</legend>
+                <ol>
+                    <li>
+                        <label>Home Team</label>
+                        <select id="homeList"></select>
+                    </li>
+                    <li>
+                        <label>Away Team</label>
+                        <select id="awayList"></select>
+                    </li>
+                    <li>
+                        <label class="button">Calculate</label>
+                    </li>
+                </ol>
+            </fieldset>
+            
+            <fieldset id="results" class="hidden">
+                <legend>Results</legend>
+                <ol></ol>
+            </fieldset>
+        </form>
+        
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+        <script text="text/javascript" src="./stat_pull.js"></script>
+    </body>
+</html>
