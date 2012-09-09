@@ -8,22 +8,26 @@ var PPU_FIRST_DOWN = 1.140160643,
 
 
 $(document).ready(function() {
-  var url = 'http://matsumoto26sunday.appspot.com/stats';
+  var url_stats = 'http://matsumoto26sunday.appspot.com/stats',
+      url_templates = 'http://matsumoto26sunday.appspot.com/templates';
 
-  $.get(url, function(data) {
-    stats = data;
+  $.when($.get(url_templates))
+      .done(function(tmplData) {
+        var templateName,
+            templates = $(tmplData).filter('script');
+        
+        for(var i = templates.length - 1; i >= 0; i -= 1) {
+          templateName = $(templates[i]).attr('id');
+          $.templates(templateName, templates[i]);
+        }
+        
+        $.when($.get(url_stats))
+            .done(function(statData) {
+              stats = statData;
+              loadData_(stats);
+            });
+      });
 
-        // Fetch the style templates to display the data
-        /*
-        $.get('./templates.html', function(templates) {
-            $('body').append(templates);
-
-            loadData_(stats);
-        });
-        */
-    loadData_(stats);
-  });
-    
   // Initialize calculate button
   $('.button').click(function () {
     var awayTeam = $('#awayList').find('option:selected').text(),
@@ -90,18 +94,13 @@ var loadData_ = (function(data) {
   var element = '',
       teams = Object.keys(stats).sort().reverse();        
 
-  $.templates({
-    listOption: '#listOption',
-    singleResult: '#singleResult'    
-  });
-
   for(var i = teams.length - 1; i >= 0; i -= 1) {
     element += $.render.listOption({
       'name': teams[i],
       'value': teams.length-i
     });
   }
-  
+
   $('#homeList').html(element);
   $('#awayList').html(element);
 });
