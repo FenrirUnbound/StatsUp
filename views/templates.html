@@ -1,3 +1,7 @@
-<script id="selectMenu" type="text/jquery-tmpl">
-    <option value="{$ value}">{$ name}</option>
+<script id="listOption" type="text/x-jsrender" data-jsv-tmpl="listOption">
+    <option value="{{>value}}">{{>name}}</option>
+</script>
+<script id="singleResult" type="text/x-jsrender" data-jsv-tmpl="singleResult">
+    <li>Estimated Total Score</li>
+    <li>{{>value}}</li>
 </script>

@@ -1,5 +1,5 @@
 application: matsumoto26sunday
-version: 1
+version: 2
 runtime: python27
 api_version: 1
 threadsafe: false
@@ -9,6 +9,8 @@ handlers:
   script: stats.py
 - url: /createEleven
   script: create_eleven.py
+- url: /templates
+  script: templates.py
 - url: /favicon\.ico
   static_files: static/images/favicon.ico
   upload: static/images/favicon\.ico
