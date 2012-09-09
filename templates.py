@@ -11,7 +11,7 @@ from models.team import Team
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers['Content-Type'] = 'text/html'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         
         iFile = open('views/templates.html')
