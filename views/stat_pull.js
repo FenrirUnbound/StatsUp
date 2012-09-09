@@ -8,25 +8,21 @@ var PPU_FIRST_DOWN = 1.140160643,
 
 
 $(document).ready(function() {
-  var url_stats = 'http://matsumoto26sunday.appspot.com/stats',
-      url_templates = 'http://matsumoto26sunday.appspot.com/templates';
+  var templates = $('script[data-jsv-tmpl]'),
+      url_stats = 'http://matsumoto26sunday.appspot.com/stats';
 
-  $.when($.get(url_templates))
-      .done(function(tmplData) {
-        var templateName,
-            templates = $(tmplData).filter('script');
-        
-        for(var i = templates.length - 1; i >= 0; i -= 1) {
-          templateName = $(templates[i]).attr('id');
-          $.templates(templateName, templates[i]);
-        }
-        
-        $.when($.get(url_stats))
-            .done(function(statData) {
-              stats = statData;
-              loadData_(stats);
-            });
+  // Fetch & load stats data 
+  $.when($.get(url_stats))
+      .done(function(statData) {
+        stats = statData;
+        loadData_(stats);
       });
+
+  // Load templates from DOM
+  for(var i = templates.length - 1; i >= 0; i -= 1) {
+    templateName = $(templates[i]).attr('id');
+    $.templates(templateName, templates[i]);
+  }
 
   // Initialize calculate button
   $('.button').click(function () {
