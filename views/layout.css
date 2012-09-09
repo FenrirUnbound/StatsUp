@@ -34,6 +34,7 @@ fieldset legend {
     margin: 0.5em;
     padding: 1em;
     text-align: center;
+    width: 75%;
 }
 
 h1,h2,h3,h4,h5,h6 {
@@ -53,6 +54,29 @@ ol li {
     -webkit-border-radius: 20px;
     padding: 0.5em 1.5em 0.5em 1.5em;
 }
+
+.hbox {
+    display: box;
+    display: -moz-box;
+    display: -webkit-box;
+    box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-pack: start;
+    -moz-box-pack: start;
+    -webkit-box-pack: start;
+    list-style: none;
+    text-transform: uppercase;
+}
+
+.hbox li {
+    box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    margin: 0px;
+    padding: 0px 3.75% 0px 3.75%;
+}
+
 
 .hidden {
     display: none;
