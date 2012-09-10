@@ -82,6 +82,10 @@ ol li {
     display: none;
 }
 
+.noBorder {
+    border: 0px;
+}
+
 @media (max-width: 600px) {
     fieldset {
         border-radius: 20px;
