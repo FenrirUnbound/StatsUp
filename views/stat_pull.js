@@ -6,7 +6,9 @@ var PPU_FIRST_DOWN = 1.140160643,
     PPU_RUSH = 0.18933609,
     TOTAL_SEASON_GAMES = 16;
 
-
+/***
+ * Initialize all functions and features
+ */
 $(document).ready(function() {
   var templates = $('script[data-jsv-tmpl]'),
       url_stats = 'http://matsumoto26sunday.appspot.com/stats';
@@ -25,30 +27,97 @@ $(document).ready(function() {
   }
 
   // Initialize calculate button
-  $('.button').click(function () {
-    var awayTeam = $('#awayList').find('option:selected').text(),
-        homeTeam = $('#homeList').find('option:selected').text(),
-        result;
-
-    result = {
-      'estTotalScore': estimateTotal_(stats[homeTeam], stats[awayTeam])
-    }
-
-    displayResults_(result);
-  });
+  $('.button').click(calculate_);
 });
 
-var displayResults_ = (function(result) {
+var calculate_ = (function() {
+    var awayTeam = $('#awayList').find('option:selected').text(),
+        defenseStats,
+        homeTeam = $('#homeList').find('option:selected').text();
+
+    // Unhide the results block
     if(++calcCounter)
       $('#results').removeClass('hidden');
 
-    $('#results > ol').empty().html(
+    // Insert the results
+    $('#scoreBox').empty().html(
       $.render.singleResult({
-        'value': result.estTotalScore
+        'value': estimateTotal_(stats[homeTeam], stats[awayTeam])
+      })
+    );
+
+    offenseStats = estimateSquad_(stats[homeTeam]['offense'],
+                                  stats[awayTeam]['offense']);
+    $('#offenseBox > ol').empty().html(
+      $.render.displayStats({
+        'title': [
+          'First Downs',
+          'Pass Yards',
+          'Rush Yards'
+        ],
+        'stats': [
+          offenseStats.firstDown,
+          offenseStats.pass,
+          offenseStats.rush
+        ]
+      })
+    );
+
+    defenseStats = estimateSquad_(stats[homeTeam]['defense'],
+                                  stats[awayTeam]['defense']);
+    $('#defenseBox > ol').empty().html(
+      $.render.displayStats({
+        'title': [
+          'First Downs',
+          'Pass Yards',
+          'Rush Yards'
+        ],
+        'stats': [
+          defenseStats.firstDown,
+          defenseStats.pass,
+          defenseStats.rush
+        ]
       })
     );
 });
 
+var estimateSquad_ = (function(homeTeam, awayTeam) {
+  var awayTeamFirstDown = awayTeam['first_down']/TOTAL_SEASON_GAMES,
+      awayTeamPass = awayTeam['pass']/TOTAL_SEASON_GAMES,
+      awayTeamRush = awayTeam['rush']/TOTAL_SEASON_GAMES,
+      homeTeamFirstDown = homeTeam['first_down']/TOTAL_SEASON_GAMES,
+      homeTeamPass = homeTeam['pass']/TOTAL_SEASON_GAMES,
+      homeTeamRush = homeTeam['rush']/TOTAL_SEASON_GAMES,
+      result = {};
+
+
+  result['firstDown'] = {
+    'average': (awayTeamFirstDown + homeTeamFirstDown)/2,
+    'away': awayTeamFirstDown,
+    'home': homeTeamFirstDown,
+    'weighted': (awayTeamFirstDown + homeTeamFirstDown)/2 * PPU_FIRST_DOWN
+  }
+  
+  result['pass'] = {
+    'average': (awayTeamPass + homeTeamPass)/2,
+    'away': awayTeamPass,
+    'home': homeTeamPass,
+    'weighted': (awayTeamPass + homeTeamPass)/2 * PPU_PASS
+  }
+  
+  result['rush'] = {
+    'average': (awayTeamRush + homeTeamRush)/2,
+    'away': awayTeamRush,
+    'home': homeTeamRush,
+    'weighted': (awayTeamRush + homeTeamRush)/2 * PPU_RUSH
+  }
+  
+  return result;
+});
+
+// TODO: Some of these calculations will occur twice
+//        in other portions of the code. Refactor
+//        to reduce the amount of calculations
 var estimateTotal_ = (function(firstTeam, secondTeam) {
   var avgDefense,
       avgDefenseFirstDown,
