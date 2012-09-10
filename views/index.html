@@ -33,18 +33,20 @@
                     <li>Defense</li>
                   </ul>
                 </legend>
-                <fieldset id="scoreBox" class="noBorder"><ol></ol></fieldset>
-                <fieldset id="offenseBox" class="hidden"><ol></ol></fieldset>
-                <fieldset id="defenseBox" class="hidden"><ol></ol></fieldset>
+                <fieldset id="scoreBox" class="noBorder"></fieldset>
+                <fieldset id="offenseBox" class="hidden"></fieldset>
+                <fieldset id="defenseBox" class="hidden"></fieldset>
             </fieldset>
         </form>
         
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-        <script type="text/javascript" src="./jsrender/jsrender.js"></script>
-        <script text="text/javascript" src="./stat_pull.js"></script>
+        <script type="text/javascript" src="../scripts/jsrender/jsrender.js"></script>
+        <script text="text/javascript" src="../scripts/stat_pull.js"></script>
         <!-- jsRender templates -->
         <script id="displayStats" type="text/x-jsrender" data-jsv-tmpl="displayStats">
-            {{for stats ~title=title tmpl='#statBreakdown'/}}
+            <ol>
+                {{for stats ~title=title tmpl='#statBreakdown'/}}
+            </ol>
         </script>
         <script id="statBreakdown" type="text/x-jsrender" data-jsv-tmpl="statBreakdown">
           <li>{{>~title[#index]}}</li>

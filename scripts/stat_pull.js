@@ -63,15 +63,15 @@ var calculate_ = (function() {
 
   // -- Insert the results --
   // Score Stats
-  cache = $('#scoreBox > ol').empty().html(
+  cache = $('#scoreBox').empty().html(
     $.render.singleResult({
       'value': estimateTotal_(defenseStats, offenseStats)
     })
   );
-  tabs.push($(cache).parent());
+  tabs.push($(cache));
   
   // Offense Stats
-  cache = $('#offenseBox > ol').empty().html(
+  cache = $('#offenseBox').empty().html(
     $.render.displayStats({
       'title': [
         'First Downs',
@@ -85,10 +85,10 @@ var calculate_ = (function() {
       ]
     })
   );
-  tabs.push($(cache).parent());
+  tabs.push($(cache));
 
   // Defense Stats
-  cache = $('#defenseBox > ol').empty().html(
+  cache = $('#defenseBox').empty().html(
     $.render.displayStats({
       'title': [
         'First Downs',
@@ -102,7 +102,7 @@ var calculate_ = (function() {
       ]
     })
   );
-  tabs.push($(cache).parent());
+  tabs.push($(cache));
 });
 
 var estimateSquad_ = (function(homeTeam, awayTeam) {
