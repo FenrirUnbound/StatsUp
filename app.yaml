@@ -9,6 +9,8 @@ handlers:
   script: stats.py
 - url: /createEleven
   script: create_eleven.py
+- url: /scoreboard
+  script: scoreboard.py
 - url: /templates
   script: templates.py
 - url: /favicon\.ico
