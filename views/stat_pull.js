@@ -1,5 +1,7 @@
 var calcCounter = 0,
-    stats = {};
+    currentTab,
+    stats = {},
+    tabs = [];
 
 var PPU_FIRST_DOWN = 1.140160643,
     PPU_PASS = 0.096563805,
@@ -31,54 +33,62 @@ $(document).ready(function() {
 });
 
 var calculate_ = (function() {
-    var awayTeam = $('#awayList').find('option:selected').text(),
-        defenseStats,
-        homeTeam = $('#homeList').find('option:selected').text();
+  var awayTeam = $('#awayList').find('option:selected').text(),
+      defenseStats,
+      homeTeam = $('#homeList').find('option:selected').text(),
+      offenseStats;
 
-    // Unhide the results block
-    if(++calcCounter)
-      $('#results').removeClass('hidden');
+  defenseStats = estimateSquad_(stats[homeTeam]['defense'],
+                                stats[awayTeam]['defense']);
+  offenseStats = estimateSquad_(stats[homeTeam]['offense'],
+                                stats[awayTeam]['offense']);
 
-    // Insert the results
-    $('#scoreBox').empty().html(
-      $.render.singleResult({
-        'value': estimateTotal_(stats[homeTeam], stats[awayTeam])
-      })
-    );
+  // Unhide the results block
+  if(++calcCounter)
+    $('#results').removeClass('hidden');
 
-    offenseStats = estimateSquad_(stats[homeTeam]['offense'],
-                                  stats[awayTeam]['offense']);
-    $('#offenseBox > ol').empty().html(
-      $.render.displayStats({
-        'title': [
-          'First Downs',
-          'Pass Yards',
-          'Rush Yards'
-        ],
-        'stats': [
-          offenseStats.firstDown,
-          offenseStats.pass,
-          offenseStats.rush
-        ]
-      })
-    );
+  // -- Insert the results --
+  // Offense Stats
+  currentTab = $('#offenseBox > ol').empty().html(
+    $.render.displayStats({
+      'title': [
+        'First Downs',
+        'Pass Yards',
+        'Rush Yards'
+      ],
+      'stats': [
+        offenseStats.firstDown,
+        offenseStats.pass,
+        offenseStats.rush
+      ]
+    })
+  );
+  tabs.push(currentTab);
 
-    defenseStats = estimateSquad_(stats[homeTeam]['defense'],
-                                  stats[awayTeam]['defense']);
-    $('#defenseBox > ol').empty().html(
-      $.render.displayStats({
-        'title': [
-          'First Downs',
-          'Pass Yards',
-          'Rush Yards'
-        ],
-        'stats': [
-          defenseStats.firstDown,
-          defenseStats.pass,
-          defenseStats.rush
-        ]
-      })
-    );
+  // Defense Stats
+  currentTab = $('#defenseBox > ol').empty().html(
+    $.render.displayStats({
+      'title': [
+        'First Downs',
+        'Pass Yards',
+        'Rush Yards'
+      ],
+      'stats': [
+        defenseStats.firstDown,
+        defenseStats.pass,
+        defenseStats.rush
+      ]
+    })
+  );
+  tabs.push(currentTab);
+
+  // Score Stats
+  currentTab = $('#scoreBox').empty().html(
+    $.render.singleResult({
+      'value': estimateTotal_(defenseStats, offenseStats)
+    })
+  );
+  tabs.push(currentTab);
 });
 
 var estimateSquad_ = (function(homeTeam, awayTeam) {
@@ -89,7 +99,6 @@ var estimateSquad_ = (function(homeTeam, awayTeam) {
       homeTeamPass = homeTeam['pass']/TOTAL_SEASON_GAMES,
       homeTeamRush = homeTeam['rush']/TOTAL_SEASON_GAMES,
       result = {};
-
 
   result['firstDown'] = {
     'average': (awayTeamFirstDown + homeTeamFirstDown)/2,
@@ -115,44 +124,19 @@ var estimateSquad_ = (function(homeTeam, awayTeam) {
   return result;
 });
 
-// TODO: Some of these calculations will occur twice
-//        in other portions of the code. Refactor
-//        to reduce the amount of calculations
-var estimateTotal_ = (function(firstTeam, secondTeam) {
+var estimateTotal_ = (function(defenseStats, offenseStats) {
   var avgDefense,
-      avgDefenseFirstDown,
-      avgDefensePass,
-      avgDefenseRush,
-      avgOffense,
-      avgOffenseFirstDown,
-      avgOffensePass,
-      avgOffenseRush,
-      firstDefense = firstTeam.defense,
-      firstOffense = firstTeam.offense,
-      secondDefense = secondTeam.defense,
-      secondOffense = secondTeam.offense;
+      avgOffense;
 
-  avgDefenseFirstDown = (firstDefense['first_down']/TOTAL_SEASON_GAMES + 
-      secondDefense['first_down']/TOTAL_SEASON_GAMES)/2;
-  avgOffenseFirstDown = (firstOffense['first_down']/TOTAL_SEASON_GAMES + 
-      secondOffense['first_down']/TOTAL_SEASON_GAMES)/2;
+  avgDefense = ((defenseStats['firstDown']['average'] * PPU_FIRST_DOWN) +
+      (defenseStats['pass']['average'] * PPU_PASS) +
+      (defenseStats['rush']['average'] * PPU_RUSH)) / 3;
 
-  avgDefensePass = (firstDefense.pass/TOTAL_SEASON_GAMES + 
-      secondDefense.pass/TOTAL_SEASON_GAMES)/2;
-  avgOffensePass = (firstOffense.pass/TOTAL_SEASON_GAMES + 
-      secondOffense.pass/TOTAL_SEASON_GAMES)/2;
-    
-  avgDefenseRush = (firstDefense.rush/TOTAL_SEASON_GAMES + 
-      secondDefense.rush/TOTAL_SEASON_GAMES)/2;
-  avgOffenseRush = (firstOffense.rush/TOTAL_SEASON_GAMES + 
-      secondOffense.rush/TOTAL_SEASON_GAMES)/2;
+  avgOffense = ((offenseStats['firstDown']['average'] * PPU_FIRST_DOWN) +
+      (offenseStats['pass']['average'] * PPU_PASS) +
+      (defenseStats['rush']['average'] * PPU_RUSH)) / 3;
 
-  avgDefense = (avgDefenseFirstDown * PPU_FIRST_DOWN + 
-      avgDefensePass * PPU_PASS + avgDefenseRush * PPU_RUSH)/3;
-  avgOffense = (avgOffenseFirstDown * PPU_FIRST_DOWN +
-      avgOffensePass * PPU_PASS + avgOffenseRush * PPU_RUSH)/3;
-
-    return avgDefense + avgOffense;
+  return avgDefense + avgOffense;
 });
 
 var loadData_ = (function(data) {
