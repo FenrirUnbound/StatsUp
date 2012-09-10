@@ -23,10 +23,19 @@
                     </li>
                 </ol>
             </fieldset>
+
             
             <fieldset id="results" class="hidden">
-                <legend>Results</legend>
-                <ol></ol>
+                <legend>
+                  <ul id="tabs" class="hbox">
+                    <li>Score</li>
+                    <li>Offense</li>
+                    <li>Defense</li>
+                  </ul>
+                </legend>
+                <fieldset id="scoreBox" class="noBorder"><ol></ol></fieldset>
+                <fieldset id="offenseBox" class="hidden"><ol></ol></fieldset>
+                <fieldset id="defenseBox" class="hidden"><ol></ol></fieldset>
             </fieldset>
         </form>
         
@@ -34,12 +43,23 @@
         <script type="text/javascript" src="./jsrender/jsrender.js"></script>
         <script text="text/javascript" src="./stat_pull.js"></script>
         <!-- jsRender templates -->
+        <script id="displayStats" type="text/x-jsrender" data-jsv-tmpl="displayStats">
+            {{for stats ~title=title tmpl='#statBreakdown'/}}
+        </script>
+        <script id="statBreakdown" type="text/x-jsrender" data-jsv-tmpl="statBreakdown">
+          <li>{{>~title[#index]}}</li>
+          <li>{{:home}}</li>
+          <li>{{:away}}</li>
+          <li>{{:average}}</li>
+          <li>{{:weighted}}</li>
+        </script>
+        </script>
         <script id="listOption" type="text/x-jsrender" data-jsv-tmpl="listOption">
-            <option value="{{>value}}">{{>name}}</option>
+            <option value="{{>value}}">{{:name}}</option>
         </script>
         <script id="singleResult" type="text/x-jsrender" data-jsv-tmpl="singleResult">
             <li>Estimated Total Score</li>
-            <li>{{>value}}</li>
+            <li>{{:value}}</li>
         </script>
     </body>
 </html>
