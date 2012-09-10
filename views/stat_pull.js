@@ -1,5 +1,5 @@
 var calcCounter = 0,
-    currentTab,
+    currentTab = 0,
     stats = {},
     tabs = [];
 
@@ -30,10 +30,24 @@ $(document).ready(function() {
 
   // Initialize calculate button
   $('.button').click(calculate_);
+  
+  // Enable tabs
+  $('#tabs > li').each(function(index) {
+    var self = $(this),
+        mIndex = index;
+
+    self.click(function(e) {
+      tabs[currentTab].hide();
+      
+      currentTab = mIndex;
+      tabs[currentTab].show();
+    });
+  });
 });
 
 var calculate_ = (function() {
   var awayTeam = $('#awayList').find('option:selected').text(),
+      cache,
       defenseStats,
       homeTeam = $('#homeList').find('option:selected').text(),
       offenseStats;
@@ -44,12 +58,20 @@ var calculate_ = (function() {
                                 stats[awayTeam]['offense']);
 
   // Unhide the results block
-  if(++calcCounter)
-    $('#results').removeClass('hidden');
+  if(++calcCounter == 1)
+    $('#results').show();
 
   // -- Insert the results --
+  // Score Stats
+  cache = $('#scoreBox > ol').empty().html(
+    $.render.singleResult({
+      'value': estimateTotal_(defenseStats, offenseStats)
+    })
+  );
+  tabs.push($(cache).parent());
+  
   // Offense Stats
-  currentTab = $('#offenseBox > ol').empty().html(
+  cache = $('#offenseBox > ol').empty().html(
     $.render.displayStats({
       'title': [
         'First Downs',
@@ -63,10 +85,10 @@ var calculate_ = (function() {
       ]
     })
   );
-  tabs.push(currentTab);
+  tabs.push($(cache).parent());
 
   // Defense Stats
-  currentTab = $('#defenseBox > ol').empty().html(
+  cache = $('#defenseBox > ol').empty().html(
     $.render.displayStats({
       'title': [
         'First Downs',
@@ -80,15 +102,7 @@ var calculate_ = (function() {
       ]
     })
   );
-  tabs.push(currentTab);
-
-  // Score Stats
-  currentTab = $('#scoreBox').empty().html(
-    $.render.singleResult({
-      'value': estimateTotal_(defenseStats, offenseStats)
-    })
-  );
-  tabs.push(currentTab);
+  tabs.push($(cache).parent());
 });
 
 var estimateSquad_ = (function(homeTeam, awayTeam) {
