@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>NFL Stats</title>
+        <link rel="stylesheet" type="text/css" href="./layout.css" media="screen">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">      
+    </head>
+    <body>
+        <section id="gameScores" class="mainBody">
+        </section>
+
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+        <script type="text/javascript" src="./jsrender/jsrender.js"></script>
+        <script text="text/javascript" src="./pool.js"></script>
+        <!-- jsRender templates -->
+        <script id="scoreboard" type="text/x-jsrender" data-jsv-tmpl="scoreboard">
+            {{for scores tmpl='#scoreBox'/}}
+        </script>
+        <script id="scoreBox" type="text/x-jsrender" data-jsv-tmpl="scoreBox">
+            <article>
+                <section>
+                    <ul>
+                        <li>{{:awayName}}</li>
+                        <li>{{:awayScore}}</li>
+                    </ul>
+                    <ul>
+                        <li>{{:homeName}}</li>
+                        <li>{{:homeScore}}</li>
+                    </ul>
+                </section>
+            </article>
+        </script>
+    </body>
+</html>

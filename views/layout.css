@@ -7,6 +7,43 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
   background: transparent;
 }
 
+article {
+    background: #fff;
+    border: 3px solid #fc6;
+    border-radius: 11px;
+    -moz-border-radius: 11px;
+    -webkit-border-radius: 11px;
+    margin: 1.5em;
+    text-align: center;
+    width: 100%;
+}
+
+article section ul {
+    display: box;
+    display: -moz-box;
+    display: -webkit-box;
+    box-align: start;
+    -moz-box-align: start;
+    -webkit-box-align: start;
+    box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    box-pack: start;
+    -moz-box-pack: start;
+    -webkit-box-pack: start;
+    list-style: none;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+article section ul li {
+    box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    margin: 0px;
+    width: 50%;
+}
+
 body {
   background: #369;
   color: #036;
@@ -47,6 +84,12 @@ ol li {
     margin-bottom: 1.5em;
 }
 
+ul li {
+    line-height: 1.5em;
+    list-style: none;
+    margin-bottom: 1.5em;
+}
+
 .button {
     border: 3px solid #369;
     border-radius: 20px;
@@ -80,6 +123,10 @@ ol li {
 
 .hidden {
     display: none;
+}
+
+.mainBody {
+    margin: 1.5em;
 }
 
 .noBorder {
