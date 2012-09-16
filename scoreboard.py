@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import json
 import logging
 import webapp2
 
@@ -10,8 +11,8 @@ from models.team import Team
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers['Access-Control-Allow-Origin'] = '*'        
         
         rpc = urlfetch.create_rpc()
         urlfetch.make_fetch_call(rpc, 'http://www.nfl.com/liveupdate/scorestrip/scorestrip.json')
@@ -25,7 +26,8 @@ class MainPage(webapp2.RequestHandler):
 
                 while length != text.__len__():
                     length = text.__len__()
-                    text = text.replace(',,', ',')
+                    #text = text.replace(',,', ',')
+                    text = text.replace(',,', ',0,')
 
                     # Prevent infinite loops
                     if counter != 0:
@@ -33,7 +35,8 @@ class MainPage(webapp2.RequestHandler):
                     else:
                         break
 
-                self.response.out.write(text)
+                #self.response.out.write(text)
+                self.response.out.write(json.dumps(text, indent = 4))
         except urlfetch.DownloadError:
             self.response.out.write('Error')
 
