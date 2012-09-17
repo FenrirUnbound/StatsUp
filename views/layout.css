@@ -20,7 +20,7 @@ article {
     -moz-border-radius: 11px;
     -webkit-border-radius: 11px;
     margin-top: 1.5em;
-    padding: 1em;
+    padding: 1em 0em 1em 1em;
     text-align: center;
     width: 100%;
 }
@@ -136,7 +136,7 @@ ul li {
     border: 0px;
 }
 
-@media (min-width: 1080px) {
+@media (min-width: 920px) {
     article {
         float: left;
         margin: 1%;
@@ -144,7 +144,7 @@ ul li {
     }
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 920px) {
     article {
         float: left;
         margin: 1%;
