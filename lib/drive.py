@@ -102,7 +102,7 @@ class Drive:
         spreadsheets_feed = self._client.GetSpreadsheetsFeed()
         index = self._search_feed(spreadsheet, spreadsheets_feed)
 
-        if index > 0:
+        if index >= 0:
             # Grab the ID
             id_parts = spreadsheets_feed.entry[index].id.text.split('/')
             id_ = id_parts[len(id_parts) - 1]

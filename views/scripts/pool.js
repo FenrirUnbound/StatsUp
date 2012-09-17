@@ -45,12 +45,10 @@ $(document).ready(function() {
   
   $.when($.get(scoreboardUrl))
       .done(function(data) {
-        var gameScoreData = ($.parseJSON(data))['ss'].reverse(),
+        var current,
+            gameScoreData = ($.parseJSON(data))['ss'].reverse(),
             result = {'scores': []},
             working;
-        
-        // TODO: Check if the format is coming back the same
-        //if(! 'ss' in gameScoreData)
 
         for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
           current = gameScoreData[i];
