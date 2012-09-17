@@ -1,3 +1,9 @@
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {
   border: 0;
   margin: 0;
@@ -13,7 +19,8 @@ article {
     border-radius: 11px;
     -moz-border-radius: 11px;
     -webkit-border-radius: 11px;
-    margin: 1.5em;
+    margin-top: 1.5em;
+    padding: 1em;
     text-align: center;
     width: 100%;
 }
@@ -125,15 +132,33 @@ ul li {
     display: none;
 }
 
-.mainBody {
-    margin: 1.5em;
-}
-
 .noBorder {
     border: 0px;
 }
 
+@media (min-width: 1080px) {
+    article {
+        float: left;
+        margin: 1%;
+        width: 31%;
+    }
+}
+
+@media (max-width: 1080px) {
+    article {
+        float: left;
+        margin: 1%;
+        width: 48%;
+    }
+}
+
 @media (max-width: 600px) {
+    article {
+        float: none;
+        margin: 1%;
+        width: 98%;
+    }
+
     fieldset {
         border-radius: 20px;
         -moz-border-radius: 20px;
