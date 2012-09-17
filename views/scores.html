@@ -10,25 +10,29 @@
         </section>
 
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-        <script type="text/javascript" src="./jsrender/jsrender.js"></script>
-        <script text="text/javascript" src="./pool.js"></script>
+        <script type="text/javascript" src="./scripts/jsrender/jsrender.js"></script>
+        <script text="text/javascript" src="./scripts/pool.js"></script>
         <!-- jsRender templates -->
         <script id="scoreboard" type="text/x-jsrender" data-jsv-tmpl="scoreboard">
-            {{for scores tmpl='#scoreBox'/}}
+            <ul>
+                {{for scores tmpl='#scoreBox'/}}
+            </ul>
         </script>
         <script id="scoreBox" type="text/x-jsrender" data-jsv-tmpl="scoreBox">
-            <article>
-                <section>
-                    <ul>
-                        <li>{{:awayName}}</li>
-                        <li>{{:awayScore}}</li>
-                    </ul>
-                    <ul>
-                        <li>{{:homeName}}</li>
-                        <li>{{:homeScore}}</li>
-                    </ul>
-                </section>
-            </article>
+            <li>
+                <article>
+                    <section>
+                        <ul>
+                            <li>{{:awayName}}</li>
+                            <li>{{:awayScore}}</li>
+                        </ul>
+                        <ul>
+                            <li>{{:homeName}}</li>
+                            <li>{{:homeScore}}</li>
+                        </ul>
+                    </section>
+                </article>
+            </li>
         </script>
     </body>
 </html>
