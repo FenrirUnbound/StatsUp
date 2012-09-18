@@ -30,6 +30,14 @@
                             <li>{{:homeName}}</li>
                             <li>{{:homeScore}}</li>
                         </ul>
+                        <ul id="gameTime" class="gameTime">
+                            {{if gameClock}}
+                                <li>QT {{:gameQuarter}}</li>
+                                <li>{{:gameClock}}</li>
+                            {{else}}
+                                <li>{{:gameQuarter}}</li>
+                            {{/if}}
+                        </ul>
                     </section>
                 </article>
             </li>

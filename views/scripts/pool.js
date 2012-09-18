@@ -1,5 +1,6 @@
 var AWAY_NAME = 4,
     AWAY_SCORE = 5,
+    GAME_CLOCK = 3,
     GAME_STATUS = 2,
     HOME_NAME = 6
     HOME_SCORE = 7,
@@ -40,22 +41,25 @@ var AWAY_NAME = 4,
 
 $(document).ready(function() {
   var scoreboardUrl = 'http://matsumoto26sunday.appspot.com/scoreboard',
-      templateName,
+      templateName = '',
       templates = $('script[data-jsv-tmpl]');
-  
+
   $.when($.get(scoreboardUrl))
       .done(function(data) {
-        var current,
+        var current = {},
             gameScoreData = ($.parseJSON(data))['ss'].reverse(),
-            result = {'scores': []},
-            working;
+            result = {'scores': []};
 
         for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
           current = gameScoreData[i];
+          
+          console.log(current);
 
           result['scores'].push({
             'awayName': NAMES[current[AWAY_NAME]],
             'awayScore': current[AWAY_SCORE],
+            'gameClock': current[GAME_CLOCK],
+            'gameQuarter': current[GAME_STATUS],
             'homeName': NAMES[current[HOME_NAME]],
             'homeScore': current[HOME_SCORE]
           });
@@ -64,8 +68,6 @@ $(document).ready(function() {
         $('#gameScores').empty().html(
           $.render.scoreboard(result)
         );
-
-        console.log('finished');
       });
 
   // Load templates from DOM
@@ -73,5 +75,4 @@ $(document).ready(function() {
     templateName = $(templates[i]).attr('id');
     $.templates(templateName, templates[i]);
   }
-  console.log('done');
 });

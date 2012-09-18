@@ -105,6 +105,17 @@ ul li {
     padding: 0.5em 1.5em 0.5em 1.5em;
 }
 
+.gameTime {
+    box-align: baseline;
+    -moz-box-align: baseline;
+    -webkit-box-align:  baseline;
+    box-pack: end;
+    -moz-box-pack: end;
+    -webkit-box-pack: end;
+    text-transform: uppercase;
+    width: 50%;
+}
+
 .hbox {
     display: box;
     display: -moz-box;
