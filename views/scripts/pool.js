@@ -1,6 +1,8 @@
 var AWAY_NAME = 4,
     AWAY_SCORE = 5,
     GAME_CLOCK = 3,
+    GAME_START_DAY = 0,
+    GAME_START_TIME = 1,
     GAME_STATUS = 2,
     HOME_NAME = 6
     HOME_SCORE = 7,
@@ -50,6 +52,8 @@ $(document).ready(function() {
             gameScoreData = ($.parseJSON(data))['ss'].reverse(),
             result = {'scores': []};
 
+        console.log(gameScoreData);
+
         for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
           current = gameScoreData[i];
 
@@ -57,7 +61,9 @@ $(document).ready(function() {
             'awayName': NAMES[current[AWAY_NAME]],
             'awayScore': current[AWAY_SCORE],
             'gameClock': current[GAME_CLOCK],
-            'gameQuarter': current[GAME_STATUS],
+            'gameStatus': current[GAME_STATUS],
+            'gameStartDay': current[GAME_START_DAY],
+            'gameStartTime': current[GAME_START_TIME],
             'homeName': NAMES[current[HOME_NAME]],
             'homeScore': current[HOME_SCORE]
           });

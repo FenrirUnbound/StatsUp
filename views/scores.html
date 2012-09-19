@@ -31,11 +31,16 @@
                             <li>{{:homeScore}}</li>
                         </ul>
                         <ul class="gameClock">
-                            {{if gameClock}}
-                                <li>QT {{:gameQuarter}}</li>
-                                <li>{{:gameClock}}</li>
+                            {{if gameStatus === 'Final'}}
+                                <li>{{:gameStatus}}</li>
                             {{else}}
-                                <li>{{:gameQuarter}}</li>
+                                {{if gameStatus === 'Pregame'}}
+                                    <li>{{:gameStartDay}}</li>
+                                    <li>{{:gameStartTime}}</li>
+                                {{else}}
+                                    <li>QT {{:gameStatus}}</li>
+                                    <li>{{:gameClock}}</li>
+                                {{/if}}
                             {{/if}}
                         </ul>
                     </section>

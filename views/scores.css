@@ -30,10 +30,11 @@ ul {
     box-orient: horizontal;
     -moz-box-orient: horizontal;
     -webkit-box-orient: horizontal;
+    padding: 0% 35% 0% 35%;
     width: 100%;
 }
 
-.gameClock > li {
+.gameClock li {
     box-flex: 1;
     -moz-box-flex: 1;
     -webkit-box-flex: 1;
