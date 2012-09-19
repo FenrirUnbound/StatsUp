@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>NFL Stats</title>
-        <link rel="stylesheet" type="text/css" href="./layout.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="./scores.css" media="screen">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">      
     </head>
     <body>
@@ -13,24 +13,24 @@
         <script type="text/javascript" src="./scripts/jsrender/jsrender.js"></script>
         <script text="text/javascript" src="./scripts/pool.js"></script>
         <!-- jsRender templates -->
-        <script id="scoreboard" type="text/x-jsrender" data-jsv-tmpl="scoreboard">
+        <script id="tmpl_scoreboard" type="text/x-jsrender" data-jsv-tmpl="tmpl_scoreboard">
             <ul>
-                {{for scores tmpl='#scoreBox'/}}
+                {{for scores tmpl='#tmpl_scorebox'/}}
             </ul>
         </script>
-        <script id="scoreBox" type="text/x-jsrender" data-jsv-tmpl="scoreBox">
+        <script id="tmpl_scorebox" type="text/x-jsrender" data-jsv-tmpl="tmpl_scorebox">
             <li>
-                <article>
+                <article class="scorebox">
                     <section>
-                        <ul>
+                        <ul class="hbox">
                             <li>{{:awayName}}</li>
                             <li>{{:awayScore}}</li>
                         </ul>
-                        <ul>
+                        <ul class="hbox">
                             <li>{{:homeName}}</li>
                             <li>{{:homeScore}}</li>
                         </ul>
-                        <ul id="gameTime" class="gameTime">
+                        <ul class="gameClock">
                             {{if gameClock}}
                                 <li>QT {{:gameQuarter}}</li>
                                 <li>{{:gameClock}}</li>

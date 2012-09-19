@@ -52,8 +52,6 @@ $(document).ready(function() {
 
         for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
           current = gameScoreData[i];
-          
-          console.log(current);
 
           result['scores'].push({
             'awayName': NAMES[current[AWAY_NAME]],
@@ -66,7 +64,7 @@ $(document).ready(function() {
         }
 
         $('#gameScores').empty().html(
-          $.render.scoreboard(result)
+          $.render.tmpl_scoreboard(result)
         );
       });
 
