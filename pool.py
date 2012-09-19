@@ -12,8 +12,6 @@ from models.team import Team
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.headers['Access-Control-Allow-Origin'] = '*'
         drive = Drive()
         odds = []
         result = {}
@@ -38,7 +36,9 @@ class MainPage(webapp2.RequestHandler):
             # 1: offset. 3: season-long information
             result[header] = current[1+3:]
 
-        logging.info(result)        
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.out.write(json.dumps(result, indent = 4))      
 
 app = webapp2.WSGIApplication([('/pool', MainPage)],
                               debug=True)
