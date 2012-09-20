@@ -43,16 +43,16 @@ var AWAY_NAME = 4,
 
 $(document).ready(function() {
   var scoreboardUrl = 'http://matsumoto26sunday.appspot.com/scoreboard',
+      spreadUrl = 'http://matsumoto26sunday.appspot.com/pool',
       templateName = '',
       templates = $('script[data-jsv-tmpl]');
 
+  // Get scoreboard
   $.when($.get(scoreboardUrl))
       .done(function(data) {
         var current = {},
             gameScoreData = ($.parseJSON(data))['ss'].reverse(),
             result = {'scores': []};
-
-        console.log(gameScoreData);
 
         for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
           current = gameScoreData[i];
@@ -72,6 +72,23 @@ $(document).ready(function() {
         $('#gameScores').empty().html(
           $.render.tmpl_scoreboard(result)
         );
+      });
+
+  // Get spread data
+  $.when($.get(spreadUrl))
+      .done(function(data) {
+          var element = '',
+              players = {};
+
+          players = Object.keys(data).sort().reverse();
+          for(var i = players.length - 1; i >= 0; i -= 1) {
+            element += $.render.tmpl_listoption({
+              'name': players[i],
+              'value': players.length-i    
+            });
+          }
+          
+          $('#selectSpread').html(element);
       });
 
   // Load templates from DOM
