@@ -2,7 +2,6 @@ var AWAY_NAME = 4,
     AWAY_SCORE = 5,
     AWAY_TEAM = 0,
     GAME_CLOCK = 3,
-    GAME_MARGIN = 1,
     GAME_START_DAY = 0,
     GAME_START_TIME = 1,
     GAME_STATUS = 2,
@@ -43,6 +42,7 @@ var AWAY_NAME = 4,
       'TEN': 'Tennessee',
       'WAS': 'Washington'
     },
+    SPREAD_MARGIN =1,
     TEAM_NAME = 0;
 
 var scoreboard_ = {},
@@ -60,7 +60,7 @@ $(document).ready(function() {
           var element = '',
               players = {};
 
-          spread_ = formatSpread_(data); //Save spread data
+          spread_ = formatSpread_(data);
 
           players = Object.keys(data).sort().reverse();
           for(var i = players.length - 1; i >= 0; i -= 1) {
@@ -84,7 +84,7 @@ $(document).ready(function() {
             gameScoreData = ($.parseJSON(data))['ss'].reverse(),
             result = {'scores': []};
 
-        scoreboard_ = gameScoreData;
+        scoreboard_ = ($.parseJSON(data))['ss'];
 
         for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
           current = gameScoreData[i];
@@ -119,13 +119,16 @@ var engageSpread_ = (function() {
       homeTeam,
       person = $('#selectSpread').find('option:selected').text(),
       scores = $('#gameScores > ul > li > article');
-  
+
+  current = spread_[person];
+  console.log(current);
+  /*
   for(var i = scores.length - 1; i >= 0; i -= 1) {
     // Extra away team
     current = $(scores[i]).find('ul');
     awayTeam = $(current[AWAY_TEAM]);
-    console.log(awayTeam);
   }
+  */
 });
 
 /**
@@ -145,7 +148,7 @@ var formatSpread_ = (function(spread) {
     while(current.length > 0) {
       working = current.splice(0, 3);
       
-      if(working[GAME_MARGIN] == 'UN' || working[GAME_MARGIN] == 'OV') {
+      if(working[SPREAD_MARGIN] == 'UN' || working[SPREAD_MARGIN] == 'OV') {
         result[players[i]].push(working[0]);
         result[players[i]].push(working[1]);
         result[players[i]].push(working[2]);
