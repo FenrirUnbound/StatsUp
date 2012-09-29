@@ -121,14 +121,9 @@ var engageSpread_ = (function() {
       scores = $('#gameScores > ul > li > article');
 
   current = spread_[person];
-  console.log(current);
-  /*
-  for(var i = scores.length - 1; i >= 0; i -= 1) {
-    // Extra away team
-    current = $(scores[i]).find('ul');
-    awayTeam = $(current[AWAY_TEAM]);
+  for(var i = current.length - 1; i >= 0; i -= 1) {
+    console.log(current[i]);
   }
-  */
 });
 
 /**
@@ -136,45 +131,50 @@ var engageSpread_ = (function() {
  */
 var formatSpread_ = (function(spread) {
   var current = [],
-      players = [],
+      players = Object.keys(spread),
       result = {},
       working;
-  
-  players = Object.keys(spread);
+
   for(var i = players.length - 1; i >= 0; i -= 1) {
     result[players[i]] = [];
-
     current = spread[players[i]];
+    
     while(current.length > 0) {
       working = current.splice(0, 3);
       
-      if(working[SPREAD_MARGIN] == 'UN' || working[SPREAD_MARGIN] == 'OV') {
-        result[players[i]].push(working[0]);
-        result[players[i]].push(working[1]);
-        result[players[i]].push(working[2]);
+      if(working[SPREAD_MARGIN] === 'UN' || working[SPREAD_MARGIN] === 'OV') {
+        result[players[i]].push({
+          'team': working[0],
+          'margin': working[1],
+          'total': working[2]
+        });
       }
       else {
-        // First one is always a name
-        result[players[i]].push(working[0]);
-        result[players[i]].push(0);
-        result[players[i]].push(0);
+        //First one is always a name
+        result[players[i]].push({
+          'team': working[0],
+          'margin': 0,
+          'total': 0
+        });
         
-        // If last set is game_margin, put everything else back
-        if(working[2] == 'UN' || working[2] == 'OV') {
+        //If last set is game_margin, put everything else back
+        if(working[2] === 'UN' || working[2] === 'OV') {
           current.unshift(working[2]);
           current.unshift(working[1]);
         }
         else {
-          result[players[i]].push(working[1]);
-          result[players[i]].push(0);
-          result[players[i]].push(0);
+          result[players[i]].push({
+            'team': working[1],
+            'margin': 0,
+            'total': 0
+          });
           
-          // No guarantees on last element; put back
+          //No guarantees on last element; put back
           current.unshift(working[2]);
-        } 
+        }
       }
     }
   }
-
+  
   return result;
 });
