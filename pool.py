@@ -13,8 +13,10 @@ from models.team import Team
 class MainPage(webapp2.RequestHandler):
     def get(self):
         drive = Drive()
-        odds = []
+        odds = 0
         result = {}
+        selections = {}
+        spread = {}
         spreadsheet = self.request.get('spreadsheet_name')
         worksheet = self.request.get('worksheet_name')
 
@@ -25,6 +27,7 @@ class MainPage(webapp2.RequestHandler):
             worksheet = 'Sheet1'
 
         data = drive.get_data(spreadsheet, worksheet)
+        # Get each individual's spread choices
         for i in data:
             current = data[i]
             header = current[0]
@@ -34,7 +37,37 @@ class MainPage(webapp2.RequestHandler):
                 continue
 
             # 1: offset. 3: season-long information
-            result[header] = current[1+3:]
+            selections[header] = current[1+3:]
+
+        # Parse for spread data
+        for team in data[2][5:]:
+            # Skip day-name labels
+            if 'DAY' in team:
+                continue
+            # Skip over/under margin
+            if 'OVER' in team:
+                continue
+            # Skip total points tally
+            if 'TOTAL' in team:
+                continue
+
+            # Detect for underdog
+            if team[0] == '_':
+                spread[team[1:].upper()] = (odds * -1)
+            else:
+                #Format is: "TEAMNAME-12345 1/2"
+                deliminator = team.index('-')
+                # There is a space on the spread for the .5 point
+                space = team[deliminator:].index(' ')
+
+                odds = int(team[deliminator:deliminator+space])
+                odds = (odds - 0.5)
+                
+                spread[team[:deliminator].upper()] = odds
+
+        # Format the result
+        result['selection'] = selections
+        result['spread'] = spread
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
