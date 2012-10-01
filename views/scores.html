@@ -6,6 +6,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">      
     </head>
     <body>
+        <section>
+            <form>
+                <fieldset id="spread" class="spreadForm">
+                    <ul>
+                        <li>
+                            <select id="selectSpread"></select>
+                        </li>
+                        <li>
+                            <label id="selectButton" class="selectButton">Select</label>
+                        </li>
+                    </ul>
+                </fieldset>
+            </form>
+        </section>
+    
         <section id="gameScores" class="mainBody">
         </section>
 
@@ -20,7 +35,7 @@
         </script>
         <script id="tmpl_scorebox" type="text/x-jsrender" data-jsv-tmpl="tmpl_scorebox">
             <li>
-                <article class="scorebox">
+                <article class="scorebox white">
                     <section>
                         <ul class="hbox">
                             <li>{{:awayName}}</li>
@@ -45,6 +60,9 @@
                     </section>
                 </article>
             </li>
+        </script>
+        <script id="tmpl_listoption" type="text/x-jsrender" data-jsv-tmpl="tmpl_listoption">
+            <option value="{{:value}}">{{:name}}</option>
         </script>
     </body>
 </html>
