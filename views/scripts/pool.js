@@ -45,7 +45,8 @@ var AWAY_NAME = 4,
     SPREAD_MARGIN =1,
     TEAM_NAME = 0;
 
-var scoreboard_ = {},
+var odds_ = {},
+    scoreboard_ = {},
     spread_ = {};
 
 $(document).ready(function() {
@@ -58,11 +59,13 @@ $(document).ready(function() {
   $.when($.get(spreadUrl))
       .done(function(data) {
           var element = '',
-              players = {};
+              players = {},
+              spreadSelection = data['spread'];
 
-          spread_ = formatSpread_(data);
+          odds_ = data['odds'];
+          spread_ = formatSpread_(spreadSelection);
 
-          players = Object.keys(data).sort().reverse();
+          players = Object.keys(spreadSelection).sort().reverse();
           for(var i = players.length - 1; i >= 0; i -= 1) {
             element += $.render.tmpl_listoption({
               'name': players[i],
@@ -117,6 +120,7 @@ var engageSpread_ = (function() {
   var difference,
       current,
       index = 0,
+      key,
       person = $('#selectSpread').find('option:selected').text(),
       scores = $('#gameScores > ul > li > article'),
       teamName;
@@ -140,7 +144,6 @@ var engageSpread_ = (function() {
     }
 
     // Check for winner
-    // TODO: Doesn't compensate for spread
     if(scoreboard_[i][AWAY_NAME] === teamName) {
       difference = scoreboard_[i][AWAY_SCORE] - scoreboard_[i][HOME_SCORE];
     }
@@ -148,11 +151,21 @@ var engageSpread_ = (function() {
       difference = scoreboard_[i][HOME_SCORE] - scoreboard_[i][AWAY_SCORE];
     }
     
-    if(difference > 0) {
-      $(scores[i]).removeClass('white').removeClass('red').addClass('green');
-    }
-    else if(difference < 0) {
-      $(scores[i]).removeClass('white').removeClass('green').addClass('red');
+    // Weight the difference with the game odds
+    key = NAMES[teamName].toUpperCase();
+    difference += odds_[key];
+    
+    // For debugging purposes
+    console.log(teamName + '(' + odds_[key] + ')');
+    
+    // Only apply color filter on games that are started
+    if(scoreboard_[i][GAME_STATUS] !== 'Pregame') {
+      if(difference > 0) {
+        $(scores[i]).removeClass('white').removeClass('red').addClass('green');
+      }
+      else if(difference < 0) {
+        $(scores[i]).removeClass('white').removeClass('green').addClass('red');
+      }
     }
   }
 });
