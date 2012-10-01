@@ -66,8 +66,8 @@ class MainPage(webapp2.RequestHandler):
                 spread[team[:deliminator].upper()] = odds
 
         # Format the result
-        result['selection'] = selections
-        result['spread'] = spread
+        result['spread'] = selections
+        result['odds'] = spread
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
