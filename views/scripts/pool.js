@@ -85,25 +85,31 @@ $(document).ready(function() {
       .done(function(data) {
         var current = {},
             gameScoreData = ($.parseJSON(data))['ss'].reverse(),
+            gameStatus,
             result = {'scores': []};
 
         scoreboard_ = ($.parseJSON(data))['ss'];
 
         for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
           current = gameScoreData[i];
+          gameStatus = current[GAME_STATUS];
+
+          //Handle for OverTime
+          gameStatus = (gameStatus === 'final overtime') ? 
+              'Final Overtime' : gameStatus;
 
           result['scores'].push({
             'awayName': NAMES[current[AWAY_NAME]],
             'awayScore': current[AWAY_SCORE],
             'gameClock': current[GAME_CLOCK],
-            'gameStatus': current[GAME_STATUS],
+            'gameStatus': gameStatus,
             'gameStartDay': current[GAME_START_DAY],
             'gameStartTime': current[GAME_START_TIME],
             'homeName': NAMES[current[HOME_NAME]],
             'homeScore': current[HOME_SCORE]
           });
         }
-
+        
         $('#gameScores').empty().html(
           $.render.tmpl_scoreboard(result)
         );
