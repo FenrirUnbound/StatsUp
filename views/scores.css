@@ -45,6 +45,10 @@ ul {
     text-align: center;
 }
 
+.green {
+    background: #cfc;
+}
+
 .hbox {
     display: box;
     display: -moz-box;
@@ -63,8 +67,11 @@ ul {
     width: 100%;
 }
 
+.red {
+    background: #fcc;
+}
+
 .scorebox {
-    background: #fff;
     border: 3px solid #fc6;
     border-radius: 11px;
     -moz-border-radius: 11px;
@@ -96,6 +103,10 @@ ul {
 
 .spreadForm ul li:first-child {
     margin: 0em 0em 1.5em 0em;
+}
+
+.white {
+    background: #fff;
 }
 
 @media (min-width: 920px) {

@@ -114,15 +114,46 @@ $(document).ready(function() {
 });
 
 var engageSpread_ = (function() {
-  var awayTeam,
+  var difference,
       current,
-      homeTeam,
+      index = 0,
       person = $('#selectSpread').find('option:selected').text(),
-      scores = $('#gameScores > ul > li > article');
+      scores = $('#gameScores > ul > li > article'),
+      teamName;
 
   current = spread_[person];
-  for(var i = current.length - 1; i >= 0; i -= 1) {
-    console.log(current[i]);
+  for(var i = scoreboard_.length - 1; i >= 0; i -= 1) {
+    index = 0;
+
+    //Find which spread applies to this game
+    for(var j = current.length - 1; j >= 0; j -= 1) {
+      teamName = current[j]['team'];
+      
+      //Fix for differences in Arizona short-hand spelling
+      teamName = (teamName === 'AZ') ? 'ARI' : teamName;
+      
+      if(scoreboard_[i][AWAY_NAME] === teamName || 
+          scoreboard_[i][HOME_NAME] === teamName) {
+        index = i;
+        break;
+      }
+    }
+
+    // Check for winner
+    // TODO: Doesn't compensate for spread
+    if(scoreboard_[i][AWAY_NAME] === teamName) {
+      difference = scoreboard_[i][AWAY_SCORE] - scoreboard_[i][HOME_SCORE];
+    }
+    else {
+      difference = scoreboard_[i][HOME_SCORE] - scoreboard_[i][AWAY_SCORE];
+    }
+    
+    if(difference > 0) {
+      $(scores[i]).removeClass('white').removeClass('red').addClass('green');
+    }
+    else if(difference < 0) {
+      $(scores[i]).removeClass('white').removeClass('green').addClass('red');
+    }
   }
 });
 
@@ -138,10 +169,10 @@ var formatSpread_ = (function(spread) {
   for(var i = players.length - 1; i >= 0; i -= 1) {
     result[players[i]] = [];
     current = spread[players[i]];
-    
+
     while(current.length > 0) {
       working = current.splice(0, 3);
-      
+
       if(working[SPREAD_MARGIN] === 'UN' || working[SPREAD_MARGIN] === 'OV') {
         result[players[i]].push({
           'team': working[0],
@@ -175,6 +206,6 @@ var formatSpread_ = (function(spread) {
       }
     }
   }
-  
+
   return result;
 });
