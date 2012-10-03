@@ -55,64 +55,22 @@ $(document).ready(function() {
       templateName = '',
       templates = $('script[data-jsv-tmpl]');
 
+  /* Until we combine the two endpoints, the scoreboard data is dependant
+   * upon the spread data (for line, over/under, total).
+   */
   // Get spread data
   $.when($.get(spreadUrl))
-      .done(function(data) {
-          var element = '',
-              players = {},
-              spreadSelection = data['spread'];
-
-          odds_ = data['odds'];
-          spread_ = formatSpread_(spreadSelection);
-
-          players = Object.keys(spreadSelection).sort().reverse();
-          for(var i = players.length - 1; i >= 0; i -= 1) {
-            element += $.render.tmpl_listoption({
-              'name': players[i],
-              'value': players.length-i    
+      .done(function(spreadData) {
+        // Setup spread
+        $.when(setupSpread_(spreadData))
+            .done(function() {
+              // Get scoreboard
+              $.when($.get(scoreboardUrl))
+                  .done(function(scoreboardData) {
+                      // Setup scoreboard
+                      setupScoreboard_(scoreboardData);
+                  });
             });
-          }
-          
-          // Load the selector
-          $('#selectSpread').html(element);
-          // Enable the select button
-          $('#selectButton').click(engageSpread_);
-          
-      });
-
-  // Get scoreboard
-  $.when($.get(scoreboardUrl))
-      .done(function(data) {
-        var current = {},
-            gameScoreData = ($.parseJSON(data))['ss'].reverse(),
-            gameStatus,
-            result = {'scores': []};
-
-        scoreboard_ = ($.parseJSON(data))['ss'];
-
-        for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
-          current = gameScoreData[i];
-          gameStatus = current[GAME_STATUS];
-
-          //Handle for OverTime
-          gameStatus = (gameStatus === 'final overtime') ? 
-              'Final Overtime' : gameStatus;
-
-          result['scores'].push({
-            'awayName': NAMES[current[AWAY_NAME]],
-            'awayScore': current[AWAY_SCORE],
-            'gameClock': current[GAME_CLOCK],
-            'gameStatus': gameStatus,
-            'gameStartDay': current[GAME_START_DAY],
-            'gameStartTime': current[GAME_START_TIME],
-            'homeName': NAMES[current[HOME_NAME]],
-            'homeScore': current[HOME_SCORE]
-          });
-        }
-        
-        $('#gameScores').empty().html(
-          $.render.tmpl_scoreboard(result)
-        );
       });
 
   // Load templates from DOM
@@ -227,4 +185,71 @@ var formatSpread_ = (function(spread) {
   }
 
   return result;
+});
+
+var setupScoreboard_ = (function(data) {
+  var awayName,
+      current = {},
+      gameScoreData = ($.parseJSON(data))['ss'].reverse(),
+      favorite,
+      gameStatus,
+      homeName,
+      result = {'scores': []};
+
+  scoreboard_ = ($.parseJSON(data))['ss'];
+
+  for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
+    current = gameScoreData[i];
+    
+    awayName = NAMES[current[AWAY_NAME]];
+    gameStatus = current[GAME_STATUS];
+    homeName = NAMES[current[HOME_NAME]];
+
+    //Handle for OverTime
+    gameStatus = (gameStatus === 'final overtime') ? 
+        'Final Overtime' : gameStatus;
+
+    // Figure out team favorite
+    favorite = (odds_[homeName.toUpperCase()] < 0) ?
+        current[HOME_NAME] : current[AWAY_NAME];
+
+    result['scores'].push({
+      'awayName': awayName,
+      'awayScore': current[AWAY_SCORE],
+      'favorite': favorite,
+      'gameClock': current[GAME_CLOCK],
+      'gameStatus': gameStatus,
+      'gameStartDay': current[GAME_START_DAY],
+      'gameStartTime': current[GAME_START_TIME],
+      'homeName': homeName,
+      'homeScore': current[HOME_SCORE],
+      'line': odds_[NAMES[favorite].toUpperCase()]
+    });
+  }
+        
+  $('#gameScores').empty().html(
+    $.render.tmpl_scoreboard(result)
+  );
+});
+
+var setupSpread_ = (function(data) {
+  var element = '',
+      players = {},
+      spreadSelection = data['spread'];
+
+  odds_ = data['odds'];
+  spread_ = formatSpread_(spreadSelection);
+
+  players = Object.keys(spreadSelection).sort().reverse();
+  for(var i = players.length - 1; i >= 0; i -= 1) {
+    element += $.render.tmpl_listoption({
+      'name': players[i],
+      'value': players.length-i    
+    });
+  }
+          
+  // Load the selector
+  $('#selectSpread').html(element);
+  // Enable the select button
+  $('#selectButton').click(engageSpread_);
 });
