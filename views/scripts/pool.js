@@ -55,45 +55,22 @@ $(document).ready(function() {
       templateName = '',
       templates = $('script[data-jsv-tmpl]');
 
+  /* Until we combine the two endpoints, the scoreboard data is dependant
+   * upon the spread data (for line, over/under, total).
+   */
   // Get spread data
   $.when($.get(spreadUrl))
       .done(function(spreadData) {
-        setupSpread_(spreadData);
-      });
-
-  // Get scoreboard
-  $.when($.get(scoreboardUrl))
-      .done(function(data) {
-        var current = {},
-            gameScoreData = ($.parseJSON(data))['ss'].reverse(),
-            gameStatus,
-            result = {'scores': []};
-
-        scoreboard_ = ($.parseJSON(data))['ss'];
-
-        for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
-          current = gameScoreData[i];
-          gameStatus = current[GAME_STATUS];
-
-          //Handle for OverTime
-          gameStatus = (gameStatus === 'final overtime') ? 
-              'Final Overtime' : gameStatus;
-
-          result['scores'].push({
-            'awayName': NAMES[current[AWAY_NAME]],
-            'awayScore': current[AWAY_SCORE],
-            'gameClock': current[GAME_CLOCK],
-            'gameStatus': gameStatus,
-            'gameStartDay': current[GAME_START_DAY],
-            'gameStartTime': current[GAME_START_TIME],
-            'homeName': NAMES[current[HOME_NAME]],
-            'homeScore': current[HOME_SCORE]
-          });
-        }
-        
-        $('#gameScores').empty().html(
-          $.render.tmpl_scoreboard(result)
-        );
+        // Setup spread
+        $.when(setupSpread_(spreadData))
+            .done(function() {
+              // Get scoreboard
+              $.when($.get(scoreboardUrl))
+                  .done(function(scoreboardData) {
+                      // Setup scoreboard
+                      setupScoreboard_(scoreboardData);
+                  });
+            });
       });
 
   // Load templates from DOM
@@ -208,6 +185,39 @@ var formatSpread_ = (function(spread) {
   }
 
   return result;
+});
+
+var setupScoreboard_ = (function(data) {
+  var current = {},
+      gameScoreData = ($.parseJSON(data))['ss'].reverse(),
+      gameStatus,
+      result = {'scores': []};
+
+  scoreboard_ = ($.parseJSON(data))['ss'];
+
+  for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
+    current = gameScoreData[i];
+    gameStatus = current[GAME_STATUS];
+
+    //Handle for OverTime
+    gameStatus = (gameStatus === 'final overtime') ? 
+        'Final Overtime' : gameStatus;
+
+    result['scores'].push({
+      'awayName': NAMES[current[AWAY_NAME]],
+      'awayScore': current[AWAY_SCORE],
+      'gameClock': current[GAME_CLOCK],
+      'gameStatus': gameStatus,
+      'gameStartDay': current[GAME_START_DAY],
+      'gameStartTime': current[GAME_START_TIME],
+      'homeName': NAMES[current[HOME_NAME]],
+      'homeScore': current[HOME_SCORE]
+    });
+  }
+        
+  $('#gameScores').empty().html(
+    $.render.tmpl_scoreboard(result)
+  );
 });
 
 var setupSpread_ = (function(data) {
