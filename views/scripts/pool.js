@@ -188,30 +188,42 @@ var formatSpread_ = (function(spread) {
 });
 
 var setupScoreboard_ = (function(data) {
-  var current = {},
+  var awayName,
+      current = {},
       gameScoreData = ($.parseJSON(data))['ss'].reverse(),
+      favorite,
       gameStatus,
+      homeName,
       result = {'scores': []};
 
   scoreboard_ = ($.parseJSON(data))['ss'];
 
   for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
     current = gameScoreData[i];
+    
+    awayName = NAMES[current[AWAY_NAME]];
     gameStatus = current[GAME_STATUS];
+    homeName = NAMES[current[HOME_NAME]];
 
     //Handle for OverTime
     gameStatus = (gameStatus === 'final overtime') ? 
         'Final Overtime' : gameStatus;
 
+    // Figure out team favorite
+    favorite = (odds_[homeName.toUpperCase()] < 0) ?
+        current[HOME_NAME] : current[AWAY_NAME];
+
     result['scores'].push({
-      'awayName': NAMES[current[AWAY_NAME]],
+      'awayName': awayName,
       'awayScore': current[AWAY_SCORE],
+      'favorite': favorite,
       'gameClock': current[GAME_CLOCK],
       'gameStatus': gameStatus,
       'gameStartDay': current[GAME_START_DAY],
       'gameStartTime': current[GAME_START_TIME],
-      'homeName': NAMES[current[HOME_NAME]],
-      'homeScore': current[HOME_SCORE]
+      'homeName': homeName,
+      'homeScore': current[HOME_SCORE],
+      'line': odds_[NAMES[favorite].toUpperCase()]
     });
   }
         
