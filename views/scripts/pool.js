@@ -57,27 +57,8 @@ $(document).ready(function() {
 
   // Get spread data
   $.when($.get(spreadUrl))
-      .done(function(data) {
-          var element = '',
-              players = {},
-              spreadSelection = data['spread'];
-
-          odds_ = data['odds'];
-          spread_ = formatSpread_(spreadSelection);
-
-          players = Object.keys(spreadSelection).sort().reverse();
-          for(var i = players.length - 1; i >= 0; i -= 1) {
-            element += $.render.tmpl_listoption({
-              'name': players[i],
-              'value': players.length-i    
-            });
-          }
-          
-          // Load the selector
-          $('#selectSpread').html(element);
-          // Enable the select button
-          $('#selectButton').click(engageSpread_);
-          
+      .done(function(spreadData) {
+        setupSpread_(spreadData);
       });
 
   // Get scoreboard
@@ -227,4 +208,26 @@ var formatSpread_ = (function(spread) {
   }
 
   return result;
+});
+
+var setupSpread_ = (function(data) {
+  var element = '',
+      players = {},
+      spreadSelection = data['spread'];
+
+  odds_ = data['odds'];
+  spread_ = formatSpread_(spreadSelection);
+
+  players = Object.keys(spreadSelection).sort().reverse();
+  for(var i = players.length - 1; i >= 0; i -= 1) {
+    element += $.render.tmpl_listoption({
+      'name': players[i],
+      'value': players.length-i    
+    });
+  }
+          
+  // Load the selector
+  $('#selectSpread').html(element);
+  // Enable the select button
+  $('#selectButton').click(engageSpread_);
 });
