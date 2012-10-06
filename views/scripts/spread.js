@@ -217,7 +217,8 @@ var setupScoreboard_ = (function(data) {
     result['scores'].push({
       'awayName': awayName,
       'awayScore': current[AWAY_SCORE],
-      'favorite': favorite,
+      'favoriteShort': favorite,
+      'favoriteLong': NAMES[favorite],
       'gameClock': current[GAME_CLOCK],
       'gameStatus': gameStatus,
       'gameStartDay': current[GAME_START_DAY],

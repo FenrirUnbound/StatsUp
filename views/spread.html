@@ -62,16 +62,23 @@
                     </ul>
                     {{if line}}
                         <ul class="hbox spreadLine" id="expandSpreadDetails">
-                            <li>{{:favorite}} {{:line}}</li>
+                            <li>{{:favoriteShort}} {{:line}}</li>
                         </ul>
                     {{/if}}
                 </section>
                 {{if line}}
                     <section class="spreadDetails drawerClose" id="spreadDetails">
-                        <ul>
+                        <ul class="hbox">
                             <li>Line</li>
+                            <li>{{:favoriteLong}} {{:line}}</li>
+                        </ul>
+                        <ul class="hbox">
                             <li>Over/Under</li>
+                            <li>{{:overUnder}}</li>
+                        </ul>
+                        <ul class="hbox">
                             <li>Total Score</li>
+                            <li>{{:totalScore}}</li>
                         </ul>
                     </section>
                 {{/if}}
