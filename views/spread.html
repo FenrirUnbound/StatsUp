@@ -28,14 +28,14 @@
         
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
         <script type="text/javascript" src="./scripts/jsrender/jsrender.js"></script>
-        <script text="text/javascript" src="./scripts/pool.js"></script>
+        <script text="text/javascript" src="./scripts/spread.js"></script>
         <!-- jsRender templates -->
         <script id="tmpl_scoreboard" type="text/x-jsrender" data-jsv-tmpl="tmpl_scoreboard">
             {{for scores tmpl='#tmpl_scorebox'/}}
         </script>
         <script id="tmpl_scorebox" type="text/x-jsrender" data-jsv-tmpl="tmpl_scorebox">
             <article class="scoreboard">
-                <section class="scorebox white">
+                <section class="scorebox white" id="scorebox">
                     <ul class="hbox">
                         <li>{{:awayName}}</li>
                         <li>{{:awayScore}}</li>
@@ -53,20 +53,21 @@
                             {{if gameStatus === 'Pregame'}}
                                  <li>{{:gameStartDay}} {{:gameStartTime}}pm EST</li>
                             {{else}}
+                                <li></li> <!-- Hack 25% formatting -->
                                 <li>QT {{:gameStatus}}</li>
                                 <li>{{:gameClock}}</li>
+                                <li></li> <!-- Hack 25% formatting -->
                             {{/if}}
                         {{/if}}
                     </ul>
                     {{if line}}
-                        <ul class="spreadLine">
-                            <li>{{:favorite}}</li>
-                            <li>{{:line}}</li>
+                        <ul class="hbox spreadLine" id="expandSpreadDetails">
+                            <li>{{:favorite}} {{:line}}</li>
                         </ul>
                     {{/if}}
                 </section>
                 {{if line}}
-                    <section>
+                    <section class="spreadDetails drawerClose" id="spreadDetails">
                         <ul>
                             <li>Line</li>
                             <li>Over/Under</li>

@@ -13,10 +13,6 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
     background: transparent;
 }
 
-article.scoreboard {
-    position: relative;
-}
-
 body {
     background: #369;
     color: #036;
@@ -27,8 +23,6 @@ body {
 label.selectButton {
     border: 3px solid #fff;
     border-radius: 20px;
-    -moz-border-radius: 20px;
-    -webkit-border-radius: 20px;
     color: #fc6;
     padding: 1.5% 25% 1.5% 25%;
 }
@@ -36,18 +30,38 @@ label.selectButton {
 section.scorebox {
     border: 3px solid #fc6;
     border-radius: 11px;
-    -moz-border-radius: 11px;
-    -webkit-border-radius: 11px;
     padding: 1.125%;
     width: 100%;
+}
+
+section.spreadDetails {
+    height: 0em;
+    margin: 0px auto;
+    overflow: hidden;
+    padding: 1.125%;
+    -webkit-transition: all 0.5s ease-out 0s;
+    -moz-transition: all 0.5s ease-out 0s;
+    -o-transition: all 0.5s ease-out 0s;
+    -ms-transition: all 0.5s ease-out 0s;
+    transition: all 0.5s ease-out 0s;
+    width: 85%;
+    visibility: hidden;
+}
+
+section.drawerOpen {
+    background: #fff;
+    border: 3px solid #fc6;
+    border-top: 0px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px; 
+    height: 5.5em;
+    visibility: visible;
 }
 
 section.spreadForm {
     background: #036; 
     border: 3px solid #fff;
     border-radius: 11px;
-    -moz-border-radius: 11px;
-    -webkit-border-radius: 11px;
     margin: 2.25%;
     padding: 5%;
     text-align: center;
@@ -80,6 +94,14 @@ ul.hbox li {
     width: 100%;
 }
 
+ul.spreadLine {
+    border: 3px solid #369;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
 .green {
     background: #cfc;
 }
@@ -90,6 +112,20 @@ ul.hbox li {
 
 .white {
     background: #fff;
+}
+
+/* Media Query for screen size */
+@media (max-width: 920px) {
+    article.scoreboard {
+        margin: 1.0%;
+        width: 47.75%;
+    }
+    
+    section.spreadForm {
+        margin: inherit auto;
+        padding: 2.25%;
+        width: 47.75%;
+    }
 }
 
 @media (max-width: 600px) {
