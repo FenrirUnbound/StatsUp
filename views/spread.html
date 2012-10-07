@@ -72,14 +72,18 @@
                             <li>Line</li>
                             <li>{{:favoriteLong}} {{:line}}</li>
                         </ul>
+                        {{if overUnder}}
                         <ul class="hbox">
                             <li>Over/Under</li>
                             <li>{{:overUnder}}</li>
                         </ul>
+                        {{/if}}
+                        {{if totalScore}}
                         <ul class="hbox">
                             <li>Total Score</li>
                             <li>{{:totalScore}}</li>
                         </ul>
+                        {{/if}}
                     </section>
                 {{/if}}
             </article>

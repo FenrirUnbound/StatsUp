@@ -237,7 +237,39 @@ var setupScoreboard_ = (function(data) {
   // Enable expansion of spread details
   // TODO: Only have 1 drawer out at any given moment
   $('ul#expandSpreadDetails').click(function() {
-    $(this).parent().siblings('#spreadDetails').toggleClass('drawerOpen');
+    //$(this).parent().siblings('#spreadDetails').toggleClass('drawerOpen');
+    var element = $(this).parent().siblings('#spreadDetails'),
+        height = element.height(),
+        newHeight,
+        offset = element.outerHeight();
+
+    // Toggle open/close action based on initial height
+    if( height > 1 ) {
+      element.css({
+        'height': '0px',
+        'visibility': 'hidden'
+      });
+    }
+    else {
+      // Calculate the height of the actual element behind the scenes
+      element.css({
+        'height': 'auto',
+        'position': 'absolute',
+        'visibility': 'hidden'
+      }); 
+      newHeight = element.height();
+
+      // Reset the element
+      element.css({
+        'height': '0px',
+        'position': 'static',
+        'visibility': 'visible',
+      });
+      // Increase the height
+      element.css({
+        'height': newHeight + offset + 'px'
+      });
+    }
   });
 });
 
