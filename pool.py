@@ -57,10 +57,8 @@ class MainPage(webapp2.RequestHandler):
             else:
                 #Format is: "TEAMNAME-12345 1/2"
                 deliminator = team.index('-')
-                # There is a space on the spread for the .5 point
-                space = team[deliminator:].index(' ')
 
-                odds = int(team[deliminator:deliminator+space])
+                odds = int(team[deliminator:-3])
                 odds = (odds - 0.5)
                 
                 spread[team[:deliminator].upper()] = odds
