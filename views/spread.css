@@ -90,6 +90,7 @@ ul.hbox li {
 }
 
 ul.spreadLine {
+    background: #fff;
     border: 3px solid #369;
     border-radius: 10px;
     margin-left: auto;
