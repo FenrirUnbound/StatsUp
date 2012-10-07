@@ -134,15 +134,15 @@ ul {
 @media (min-width: 920px) {
     .scorebox {
         float: left;
-        margin: 1.0%;
-        width: 31.083333333%;
+        margin: 0.9%;
+        width: 31.533333333%;
     }
     
     .spreadForm {
-        margin-left: 34.458333334%;
-        margin-right: 34.458333334%;
+        margin-left: auto;
+        margin-right: auto;
         padding: 2.25%;
-        width: 31.083333333%;
+        width: 31.533333333%;
     }
 }
 
