@@ -110,14 +110,31 @@ ul.spreadLine {
 }
 
 /* Media Query for screen size */
+@media (min-width: 920px) {
+    article.scoreboard {
+        float: left;
+        margin: 0.9%;
+        width: 31.533333333%;
+    }
+    
+    section.spreadForm {
+        margin-left: auto;
+        margin-right: auto;
+        padding: 2.25%;
+        width: 31.533333333%;
+    }
+}
+
 @media (max-width: 920px) {
     article.scoreboard {
+        float: left;
         margin: 1.0%;
         width: 47.75%;
     }
     
     section.spreadForm {
-        margin: inherit auto;
+        margin-left: auto;
+        margin-right: auto;
         padding: 2.25%;
         width: 47.75%;
     }
@@ -125,6 +142,7 @@ ul.spreadLine {
 
 @media (max-width: 600px) {
     article.scoreboard {
+        float: none;
         margin: 2.25%;
         width: 95.5%;
     }
