@@ -53,11 +53,6 @@ section.spreadDetails {
     visibility: hidden;
 }
 
-section.drawerOpen {
-    /*height: 5.5em;
-    visibility: visible;*/
-}
-
 section.spreadForm {
     background: #036; 
     border: 3px solid #fff;
