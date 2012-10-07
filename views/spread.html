@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>NFL Stats</title>
+        <link rel="stylesheet" type="text/css" href="./spread.css" media="screen">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">      
+    </head>
+    <body>
+        <!-- Player spread selection -->
+        <section class="spreadForm">
+            <form>
+                <fieldset id="spread">
+                    <ul>
+                        <li>
+                            <select id="selectSpread"></select>
+                        </li>
+                        <li>
+                            <label id="selectButton" class="selectButton">Select</label>
+                        </li>
+                    </ul>
+                </fieldset>
+            </form>
+        </section>
+        
+        <!-- Array of game scoreboxes-->
+        <section id="gameScores">
+        </section>
+        
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+        <script type="text/javascript" src="./scripts/jsrender/jsrender.js"></script>
+        <script text="text/javascript" src="./scripts/spread.js"></script>
+        <!-- jsRender templates -->
+        <script id="tmpl_scoreboard" type="text/x-jsrender" data-jsv-tmpl="tmpl_scoreboard">
+            {{for scores tmpl='#tmpl_scorebox'/}}
+        </script>
+        <script id="tmpl_scorebox" type="text/x-jsrender" data-jsv-tmpl="tmpl_scorebox">
+            <article class="scoreboard">
+                <section class="scorebox white" id="scorebox">
+                    <ul class="hbox">
+                        <li>{{:awayName}}</li>
+                        <li>{{:awayScore}}</li>
+                    </ul>
+                    <ul class="hbox">
+                        <li>{{:homeName}}</li>
+                        <li>{{:homeScore}}</li>
+                    </ul>
+                    <ul class="hbox">
+                        {{if gameStatus === 'Final'}}
+                            <li>{{:gameStatus}}</li>
+                        {{else gameStatus === 'Final Overtime'}}
+                            <li>{{:gameStatus}}</li>
+                        {{else}}
+                            {{if gameStatus === 'Pregame'}}
+                                 <li>{{:gameStartDay}} {{:gameStartTime}}pm EST</li>
+                            {{else}}
+                                <li></li> <!-- Hack 25% formatting -->
+                                <li>QT {{:gameStatus}}</li>
+                                <li>{{:gameClock}}</li>
+                                <li></li> <!-- Hack 25% formatting -->
+                            {{/if}}
+                        {{/if}}
+                    </ul>
+                    {{if line}}
+                        <ul class="hbox spreadLine" id="expandSpreadDetails">
+                            <li>{{:favoriteShort}} {{:line}}</li>
+                        </ul>
+                    {{/if}}
+                </section>
+                {{if line}}
+                    <section class="spreadDetails drawerClose" id="spreadDetails">
+                        <ul class="hbox">
+                            <li>Line</li>
+                            <li>{{:favoriteLong}} {{:line}}</li>
+                        </ul>
+                        {{if margin}}
+                        <ul class="hbox">
+                            <li>Over/Under</li>
+                            <li>{{:overUnder}}</li>
+                        </ul>
+                        {{/if}}
+                        {{if totalScore}}
+                        <ul class="hbox">
+                            <li>Total Score</li>
+                            <li>{{:totalScore}}</li>
+                        </ul>
+                        {{/if}}
+                    </section>
+                {{/if}}
+            </article>
+        </script>
+        <script id="tmpl_listoption" type="text/x-jsrender" data-jsv-tmpl="tmpl_listoption">
+            <option value="{{:value}}">{{:name}}</option>
+        </script>
+    </body>
+</html>

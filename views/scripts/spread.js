@@ -59,6 +59,7 @@ $(document).ready(function() {
    * upon the spread data (for line, over/under, total).
    */
   // Get spread data
+  // TODO: retry until the data actually loads
   $.when($.get(spreadUrl))
       .done(function(spreadData) {
         // Setup spread
@@ -216,7 +217,8 @@ var setupScoreboard_ = (function(data) {
     result['scores'].push({
       'awayName': awayName,
       'awayScore': current[AWAY_SCORE],
-      'favorite': favorite,
+      'favoriteShort': favorite,
+      'favoriteLong': NAMES[favorite],
       'gameClock': current[GAME_CLOCK],
       'gameStatus': gameStatus,
       'gameStartDay': current[GAME_START_DAY],
@@ -226,10 +228,49 @@ var setupScoreboard_ = (function(data) {
       'line': odds_[NAMES[favorite].toUpperCase()]
     });
   }
-        
+
+  // Render the scoreboards    
   $('#gameScores').empty().html(
     $.render.tmpl_scoreboard(result)
   );
+  
+  // Enable expansion of spread details
+  // TODO: Only have 1 drawer out at any given moment
+  $('ul#expandSpreadDetails').click(function() {
+    //$(this).parent().siblings('#spreadDetails').toggleClass('drawerOpen');
+    var element = $(this).parent().siblings('#spreadDetails'),
+        height = element.height(),
+        newHeight,
+        offset = element.outerHeight();
+
+    // Toggle open/close action based on initial height
+    if( height > 1 ) {
+      element.css({
+        'height': '0px',
+        'visibility': 'hidden'
+      });
+    }
+    else {
+      // Calculate the height of the actual element behind the scenes
+      element.css({
+        'height': 'auto',
+        'position': 'absolute',
+        'visibility': 'hidden'
+      }); 
+      newHeight = element.height();
+
+      // Reset the element
+      element.css({
+        'height': '0px',
+        'position': 'static',
+        'visibility': 'visible',
+      });
+      // Increase the height
+      element.css({
+        'height': newHeight + offset + 'px'
+      });
+    }
+  });
 });
 
 var setupSpread_ = (function(data) {
