@@ -13,6 +13,7 @@ from models.team import Team
 class MainPage(webapp2.RequestHandler):
     def get(self):
         drive = Drive()
+        margin = {}
         odds = 0
         result = {}
         selections = {}
@@ -40,12 +41,20 @@ class MainPage(webapp2.RequestHandler):
             selections[header] = current[1+3:]
 
         # Parse for spread data
+        last_team = ''
         for team in data[2][5:]:
             # Skip day-name labels
             if 'DAY' in team:
                 continue
-            # Skip over/under margin
+            # Save the over/under margin
             if 'OVER' in team:
+                index = team.index(' ')
+
+                over_under = int(team[index:-3])
+                over_under = (over_under + 0.5)
+                
+                margin[last_team] = over_under
+                
                 continue
             # Skip total points tally
             if 'TOTAL' in team:
@@ -61,11 +70,14 @@ class MainPage(webapp2.RequestHandler):
                 odds = int(team[deliminator:-3])
                 odds = (odds - 0.5)
                 
-                spread[team[:deliminator].upper()] = odds
+                last_team = team[:deliminator].upper()
+                
+                spread[last_team] = odds
 
         # Format the result
         result['spread'] = selections
         result['odds'] = spread
+        result['margin'] = margin
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
