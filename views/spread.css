@@ -133,6 +133,11 @@ ul.spreadLine {
         width: 47.75%;
     }
     
+    /* Prevents awkward floating behavior when drawer is engaged */
+    article.scoreboard:nth-child(odd) {
+        clear: left;
+    }
+    
     section.spreadForm {
         margin-left: auto;
         margin-right: auto;
