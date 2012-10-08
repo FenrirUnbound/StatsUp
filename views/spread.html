@@ -49,6 +49,8 @@
                             <li>{{:gameStatus}}</li>
                         {{else gameStatus === 'Final Overtime'}}
                             <li>{{:gameStatus}}</li>
+                        {{else gameStatus === 'Halftime'}}
+                            <li>{{:gameStatus}}</li>
                         {{else}}
                             {{if gameStatus === 'Pregame'}}
                                  <li>{{:gameStartDay}} {{:gameStartTime}}pm EST</li>
@@ -73,13 +75,13 @@
                             <li>{{:favoriteLong}} {{:line}}</li>
                         </ul>
                         {{if margin}}
-                        <ul class="hbox">
+                        <ul class="hbox" id="margin">
                             <li>Over/Under</li>
                             <li>{{:margin}}</li>
                         </ul>
                         {{/if}}
                         {{if totalScore}}
-                        <ul class="hbox">
+                        <ul class="hbox" id="totalScore">
                             <li>Total Score</li>
                             <li>{{:totalScore}}</li>
                         </ul>
