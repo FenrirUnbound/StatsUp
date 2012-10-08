@@ -87,8 +87,10 @@ var engageSpread_ = (function() {
       index = 0,
       key,
       person = $('#selectSpread').find('option:selected').text(),
-      scores = $('#gameScores > ul > li > article'),
+      scores = $('#gameScores > article > section:first-child'),
       teamName;
+
+  console.log(scores);
 
   current = spread_[person];
   for(var i = scoreboard_.length - 1; i >= 0; i -= 1) {

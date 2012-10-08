@@ -90,6 +90,7 @@ ul.hbox li {
 }
 
 ul.spreadLine {
+    background: #fff;
     border: 3px solid #369;
     border-radius: 10px;
     margin-left: auto;
@@ -110,14 +111,36 @@ ul.spreadLine {
 }
 
 /* Media Query for screen size */
+@media (min-width: 920px) {
+    article.scoreboard {
+        float: left;
+        margin: 0.9%;
+        width: 31.533333333%;
+    }
+    
+    section.spreadForm {
+        margin-left: auto;
+        margin-right: auto;
+        padding: 2.25%;
+        width: 31.533333333%;
+    }
+}
+
 @media (max-width: 920px) {
     article.scoreboard {
+        float: left;
         margin: 1.0%;
         width: 47.75%;
     }
     
+    /* Prevents awkward floating behavior when drawer is engaged */
+    article.scoreboard:nth-child(odd) {
+        clear: left;
+    }
+    
     section.spreadForm {
-        margin: inherit auto;
+        margin-left: auto;
+        margin-right: auto;
         padding: 2.25%;
         width: 47.75%;
     }
@@ -125,6 +148,7 @@ ul.spreadLine {
 
 @media (max-width: 600px) {
     article.scoreboard {
+        float: none;
         margin: 2.25%;
         width: 95.5%;
     }
