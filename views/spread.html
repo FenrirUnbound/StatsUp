@@ -49,6 +49,8 @@
                             <li>{{:gameStatus}}</li>
                         {{else gameStatus === 'Final Overtime'}}
                             <li>{{:gameStatus}}</li>
+                        {{else gameStatus === 'Halftime'}}
+                            <li>{{:gameStatus}}</li>
                         {{else}}
                             {{if gameStatus === 'Pregame'}}
                                  <li>{{:gameStartDay}} {{:gameStartTime}}pm EST</li>
