@@ -89,17 +89,19 @@ var engageSpread_ = (function() {
       key,
       person = $('#selectSpread').find('option:selected').text(),
       scores = $('#gameScores > article > section:first-child'),
-      teamName;
-
-  console.log(scores);
+      spreadDetails = $('#gameScores > article > section:nth-child(2)'),
+      teamName,
+      totalScore;
 
   current = spread_[person];
+  console.log(current);
   for(var i = scoreboard_.length - 1; i >= 0; i -= 1) {
     index = 0;
 
     //Find which spread applies to this game
     for(var j = current.length - 1; j >= 0; j -= 1) {
       teamName = current[j]['team'];
+      totalScore = current[j]['total'];
       
       //Fix for differences in Arizona short-hand spelling
       teamName = (teamName === 'AZ') ? 'ARI' : teamName;
@@ -125,7 +127,7 @@ var engageSpread_ = (function() {
     
     // For debugging purposes
     console.log(teamName + '(' + odds_[key] + ')');
-    
+
     // Only apply color filter on games that are started
     if(scoreboard_[i][GAME_STATUS] !== 'Pregame') {
       if(difference > 0) {
@@ -135,6 +137,9 @@ var engageSpread_ = (function() {
         $(scores[i]).removeClass('white').removeClass('green').addClass('red');
       }
     }
+    
+    // Dynamically embed the total score in the detail drawer
+    $('#totalScore > li:nth-child(2)', spreadDetails[i]).text(totalScore);
   }
 });
 
