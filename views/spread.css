@@ -27,6 +27,11 @@ label.selectButton {
     padding: 1.5% 25% 1.5% 25%;
 }
 
+li span {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
 section.scorebox {
     border: 3px solid #fc6;
     border-radius: 11px;

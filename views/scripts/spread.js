@@ -86,6 +86,7 @@ var engageSpread_ = (function() {
   var difference,
       combinedScore,
       current,
+      element,
       index = 0,
       key,
       margin,
@@ -98,10 +99,6 @@ var engageSpread_ = (function() {
   current = spread_[person];
   for(var i = scoreboard_.length - 1; i >= 0; i -= 1) {
     index = 0;
-
-    // Only calculate spread-line on games that are started
-    if(scoreboard_[i][GAME_STATUS] === 'Pregame')
-      continue;
 
     //Find which spread applies to this game
     for(var j = current.length - 1; j >= 0; j -= 1) {
@@ -119,6 +116,38 @@ var engageSpread_ = (function() {
         break;
       }
     }
+    
+    /*
+     * Dynamic Elements
+     */
+
+    // Embed the player's picked team
+    $('#teamChoice > li:nth-child(2)', spreadDetails[i])
+        .text(NAMES[teamName]);
+
+    // Dynamically embed the total score in the detail drawer
+    $('#totalScore > li:nth-child(2)', spreadDetails[i]).text(totalScore);
+    
+    // Emphasis the player's choice on over/under margin
+    if(current[index]['margin']) {
+      element = $('#margin > li:nth-child(1)', spreadDetails[i]);
+      element.html('Over/Under');  // Reset
+
+      if(current[index]['margin'] === 'UN') {
+        element.html('Over/<span>Under</span>');
+      }
+      else if(current[index]['margin'] === 'OV') {
+        element.html('<span>Over</span>/Under');
+      }
+    }
+
+    // Only calculate spread-line on games that are started
+    if(scoreboard_[i][GAME_STATUS] === 'Pregame')
+      continue;
+
+    /*
+     * Highlights
+     */
 
     // Check for winner
     if(scoreboard_[i][AWAY_NAME] === teamName) {
@@ -137,14 +166,23 @@ var engageSpread_ = (function() {
 
     // Apply color filter
     if(difference > 0) {
+      // Entire scorebox
       $(scores[i]).removeClass('white').removeClass('red').addClass('green');
+      // Spread details drawer
+      $('#teamChoice > li:nth-child(2)', spreadDetails[i])
+          .removeClass('white')
+          .removeClass('red')
+          .addClass('green');
     }
     else if(difference < 0) {
+      // Entire scorebox
       $(scores[i]).removeClass('white').removeClass('green').addClass('red');
+      // Spread details drawer
+      $('#teamChoice > li:nth-child(2)', spreadDetails[i])
+          .removeClass('white')
+          .removeClass('green')
+          .addClass('red');
     }
-    
-    // Dynamically embed the total score in the detail drawer
-    $('#totalScore > li:nth-child(2)', spreadDetails[i]).text(totalScore);
 
     // Highlight if score is within scoring range
     if(totalScore >= (combinedScore - 3) &&
@@ -165,17 +203,15 @@ var engageSpread_ = (function() {
     margin = margin_[NAMES[scoreboard_[i][AWAY_NAME]].toUpperCase()] ||
         margin_[NAMES[scoreboard_[i][HOME_NAME]].toUpperCase()];
     if(margin && current[j]['margin']) {
-      console.log(current[j]['margin']);
-      console.log(combinedScore + '--' + margin);
       // Check if UNDER is successful
-      if(current[j]['margin'] === 'UN' && combinedScore < margin) {
+      if(current[index]['margin'] === 'UN' && combinedScore < margin) {
         $('#margin > li:nth-child(2)', spreadDetails[i])
             .removeClass('red')
             .removeClass('white')
             .addClass('green');
       }
       // Check if OVER is successful
-      else if(current[j]['margin'] === 'OV' && combinedScore > margin) {
+      else if(current[index]['margin'] === 'OV' && combinedScore > margin) {
         $('#margin > li:nth-child(2)', spreadDetails[i])
             .removeClass('red')
             .removeClass('white')
@@ -288,6 +324,7 @@ var setupScoreboard_ = (function(data) {
       'homeScore': current[HOME_SCORE],
       'line': odds_[NAMES[favorite].toUpperCase()],
       'margin': margin,
+      'pickedTeam': '--',
       'totalScore': (margin) ? '--' : 0 
     });
   }
