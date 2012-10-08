@@ -84,14 +84,16 @@ $(document).ready(function() {
 
 var engageSpread_ = (function() {
   var difference,
+      combinedScore,
       current,
       index = 0,
       key,
+      margin,
       person = $('#selectSpread').find('option:selected').text(),
       scores = $('#gameScores > article > section:first-child'),
-      teamName;
-
-  console.log(scores);
+      spreadDetails = $('#gameScores > article > section:nth-child(2)'),
+      teamName,
+      totalScore;
 
   current = spread_[person];
   for(var i = scoreboard_.length - 1; i >= 0; i -= 1) {
@@ -99,7 +101,10 @@ var engageSpread_ = (function() {
 
     //Find which spread applies to this game
     for(var j = current.length - 1; j >= 0; j -= 1) {
+      combinedScore = parseInt(scoreboard_[i][AWAY_SCORE]) +
+          parseInt(scoreboard_[i][HOME_SCORE]);
       teamName = current[j]['team'];
+      totalScore = current[j]['total'];
       
       //Fix for differences in Arizona short-hand spelling
       teamName = (teamName === 'AZ') ? 'ARI' : teamName;
@@ -125,7 +130,7 @@ var engageSpread_ = (function() {
     
     // For debugging purposes
     console.log(teamName + '(' + odds_[key] + ')');
-    
+
     // Only apply color filter on games that are started
     if(scoreboard_[i][GAME_STATUS] !== 'Pregame') {
       if(difference > 0) {
@@ -133,6 +138,53 @@ var engageSpread_ = (function() {
       }
       else if(difference < 0) {
         $(scores[i]).removeClass('white').removeClass('green').addClass('red');
+      }
+    }
+    
+    // Dynamically embed the total score in the detail drawer
+    $('#totalScore > li:nth-child(2)', spreadDetails[i]).text(totalScore);
+
+    // Highlight if score is within scoring range
+    if(totalScore >= (combinedScore - 3) &&
+        totalScore <= (combinedScore + 3)) {
+      $('#totalScore > li:nth-child(2)', spreadDetails[i])
+          .removeClass('red')
+          .removeClass('white')
+          .addClass('green');
+    }
+    else {
+      $('#totalScore > li:nth-child(2)', spreadDetails[i])
+          .removeClass('white')
+          .removeClass('green')
+          .addClass('red');
+    }
+    
+    // Highlight correct margin
+    margin = margin_[NAMES[scoreboard_[i][AWAY_NAME]].toUpperCase()] ||
+        margin_[NAMES[scoreboard_[i][HOME_NAME]].toUpperCase()];
+    if(margin && current[j]['margin']) {
+      console.log(current[j]['margin']);
+      console.log(combinedScore + '--' + margin);
+      // Check if UNDER is successful
+      if(current[j]['margin'] === 'UN' && combinedScore < margin) {
+        $('#margin > li:nth-child(2)', spreadDetails[i])
+            .removeClass('red')
+            .removeClass('white')
+            .addClass('green');
+      }
+      // Check if OVER is successful
+      else if(current[j]['margin'] === 'OV' && combinedScore > margin) {
+        $('#margin > li:nth-child(2)', spreadDetails[i])
+            .removeClass('red')
+            .removeClass('white')
+            .addClass('green');
+      }
+      // Failed margin
+      else {
+        $('#margin > li:nth-child(2)', spreadDetails[i])
+            .removeClass('green')
+            .removeClass('white')
+            .addClass('red');
       }
     }
   }
@@ -218,7 +270,8 @@ var setupScoreboard_ = (function(data) {
     favorite = (odds_[homeName.toUpperCase()] < 0) ?
         current[HOME_NAME] : current[AWAY_NAME];
 
-    margin = margin_[awayName.toUpperCase()] || margin_[homeName.toUpperCase()];
+    margin = margin_[awayName.toUpperCase()] || 
+        margin_[homeName.toUpperCase()];
 
     result['scores'].push({
       'awayName': awayName,
@@ -232,7 +285,8 @@ var setupScoreboard_ = (function(data) {
       'homeName': homeName,
       'homeScore': current[HOME_SCORE],
       'line': odds_[NAMES[favorite].toUpperCase()],
-      'margin': margin
+      'margin': margin,
+      'totalScore': (margin) ? '--' : 0 
     });
   }
 
