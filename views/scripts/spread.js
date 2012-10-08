@@ -232,7 +232,8 @@ var setupScoreboard_ = (function(data) {
       'homeName': homeName,
       'homeScore': current[HOME_SCORE],
       'line': odds_[NAMES[favorite].toUpperCase()],
-      'margin': margin
+      'margin': margin,
+      'totalScore': (margin) ? '--' : 0 
     });
   }
 
