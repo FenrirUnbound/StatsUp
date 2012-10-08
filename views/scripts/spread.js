@@ -90,7 +90,7 @@ var engageSpread_ = (function() {
       key,
       margin,
       person = $('#selectSpread').find('option:selected').text(),
-      scores = $('#gameScores > article > section:first-child'),
+      scores = $('#gameScores > article > section:nth-child(1)'),
       spreadDetails = $('#gameScores > article > section:nth-child(2)'),
       teamName,
       totalScore;
@@ -98,6 +98,10 @@ var engageSpread_ = (function() {
   current = spread_[person];
   for(var i = scoreboard_.length - 1; i >= 0; i -= 1) {
     index = 0;
+
+    // Only calculate spread-line on games that are started
+    if(scoreboard_[i][GAME_STATUS] === 'Pregame')
+      continue;
 
     //Find which spread applies to this game
     for(var j = current.length - 1; j >= 0; j -= 1) {
@@ -131,14 +135,12 @@ var engageSpread_ = (function() {
     // For debugging purposes
     console.log(teamName + '(' + odds_[key] + ')');
 
-    // Only apply color filter on games that are started
-    if(scoreboard_[i][GAME_STATUS] !== 'Pregame') {
-      if(difference > 0) {
-        $(scores[i]).removeClass('white').removeClass('red').addClass('green');
-      }
-      else if(difference < 0) {
-        $(scores[i]).removeClass('white').removeClass('green').addClass('red');
-      }
+    // Apply color filter
+    if(difference > 0) {
+      $(scores[i]).removeClass('white').removeClass('red').addClass('green');
+    }
+    else if(difference < 0) {
+      $(scores[i]).removeClass('white').removeClass('green').addClass('red');
     }
     
     // Dynamically embed the total score in the detail drawer
@@ -315,20 +317,19 @@ var setupScoreboard_ = (function(data) {
       // Calculate the height of the actual element behind the scenes
       element.css({
         'height': 'auto',
-        'position': 'absolute',
-        'visibility': 'hidden'
+        'position': 'absolute'
       }); 
       newHeight = element.height();
 
       // Reset the element
       element.css({
         'height': '0px',
-        'position': 'static',
-        'visibility': 'visible',
+        'position': 'static'
       });
       // Increase the height
       element.css({
-        'height': newHeight + offset + 'px'
+        'height': newHeight + offset + 'px',
+        'visibility': 'visible'
       });
     }
   });
