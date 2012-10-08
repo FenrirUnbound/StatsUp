@@ -118,6 +118,10 @@ ul.spreadLine {
         width: 31.533333333%;
     }
     
+    article.scoreboard:nth-child(3n+1) {
+        clear: left;
+    }
+    
     section.spreadForm {
         margin-left: auto;
         margin-right: auto;

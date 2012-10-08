@@ -45,7 +45,8 @@ var AWAY_NAME = 4,
     SPREAD_MARGIN =1,
     TEAM_NAME = 0;
 
-var odds_ = {},
+var margin_ = {},
+    odds_ = {},
     scoreboard_ = {},
     spread_ = {};
 
@@ -197,6 +198,7 @@ var setupScoreboard_ = (function(data) {
       favorite,
       gameStatus,
       homeName,
+      margin,
       result = {'scores': []};
 
   scoreboard_ = ($.parseJSON(data))['ss'];
@@ -216,6 +218,8 @@ var setupScoreboard_ = (function(data) {
     favorite = (odds_[homeName.toUpperCase()] < 0) ?
         current[HOME_NAME] : current[AWAY_NAME];
 
+    margin = margin_[awayName.toUpperCase()] || margin_[homeName.toUpperCase()];
+
     result['scores'].push({
       'awayName': awayName,
       'awayScore': current[AWAY_SCORE],
@@ -227,7 +231,8 @@ var setupScoreboard_ = (function(data) {
       'gameStartTime': current[GAME_START_TIME],
       'homeName': homeName,
       'homeScore': current[HOME_SCORE],
-      'line': odds_[NAMES[favorite].toUpperCase()]
+      'line': odds_[NAMES[favorite].toUpperCase()],
+      'margin': margin
     });
   }
 
@@ -280,6 +285,7 @@ var setupSpread_ = (function(data) {
       players = {},
       spreadSelection = data['spread'];
 
+  margin_ = data['margin'];
   odds_ = data['odds'];
   spread_ = formatSpread_(spreadSelection);
 
