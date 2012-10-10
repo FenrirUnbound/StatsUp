@@ -25,6 +25,7 @@ label.selectButton {
     border-radius: 20px;
     color: #fc6;
     padding: 1.5% 25% 1.5% 25%;
+    width: 100%;
 }
 
 li span {
