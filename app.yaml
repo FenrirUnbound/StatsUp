@@ -9,6 +9,8 @@ handlers:
   script: stats.py
 - url: /createEleven
   script: create_eleven.py
+- url: /spread
+  script: spread.py
 - url: /pool
   script: pool.py
 - url: /scoreboard
