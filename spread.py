@@ -8,8 +8,20 @@ import webapp2
 from google.appengine.api import urlfetch
 from google.appengine.ext.webapp.util import run_wsgi_app
 from lib.drive import Drive
+from models.score import Score
 
+# Week 1 == Sept 5, 2012
+AWAY_NAME = 4
+AWAY_SCORE = 5
+DEFAULT_WEEK = 6  #For testing purposes only
+DEFAULT_YEAR = 2012
+GAME_CLOCK = 3
+GAME_DAY = 0
+GAME_STATUS = 2
+GAME_TIME = 1
 HTTP_OK = 200
+HOME_NAME = 6
+HOME_SCORE = 7
 URL_SCOREBOARD = 'http://www.nfl.com/liveupdate/scorestrip/scorestrip.json'
 
 class MainPage(webapp2.RequestHandler):
@@ -17,20 +29,40 @@ class MainPage(webapp2.RequestHandler):
         result = {}
         scores = {}
         spread = {}
-        spreadsheet = ''
-        worksheet = ''
+        spreadsheet = self.request.get('spreadsheet_name')
+        week = self.request.get('week')
+        worksheet = self.request.get('worksheet_name')
 
-        scores = json.loads(self._fetch_scores())
+        # Check incoming parameters
+        if week is None or len(week) == 0:
+            week = self._get_default_week()
+
+        scores = self._query_scores(week)
+        # Check how stale the score is
+        if self._is_update_required(scores):
+            scores = json.loads(self._fetch_scores())['ss']
+            self._save_scores(week, scores)
+        else:
+            # Format the data for client consumption
+            scores = self_format_scores(scores)
+
         spread = self._fetch_spread(spreadsheet, worksheet)
 
         result['odds'] = spread['odds']
         result['margin'] = spread['margin']
-        result['scoreboard'] = scores['ss']
+        result['scoreboard'] = scores
         result['spread'] = spread['spread']
+
+
+        # TODO: scores might need pre-formatting
+        result['scoreboard'] = scores
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.out.write(json.dumps(result, indent = 4))
+
+    def _is_update_required(self, scores):
+        return True
 
     def _fetch_scores(self):
         response = {}
@@ -135,6 +167,91 @@ class MainPage(webapp2.RequestHandler):
         result['margin'] = margin
         
         return result
+
+    def _format_scores(self, scores):
+        result = []
+        
+        for game in scores:
+            result.append([
+                game.game_day,
+                game.game_time,
+                game.game_status,
+                game.game_clock,
+                game.away_name,
+                str(game.away_score),
+                game.home_name,
+                str(game.home_score)
+            ])
+
+        return result
+
+    def _get_default_week(self):
+        week_one = datetime.datetime(2012, 9, 5, 0, 0, 0)
+        current = datetime.datetime.now()
+        
+        delta = current - week_one
+        
+        return ((delta.days / 7) + 1)
+
+    def _query_scores(self, week):
+        query = {}
+        result = {}
+
+        query = Score.all()
+        query.filter('week =', week)
+        result = query.fetch(25)
+        
+        return result
+
+    def _save_scores(self, week, scores):
+        query = Score.all()
+        scorebox = {}
+        result = {}
+
+        query.filter('week =', week)
+        result = query.fetch(25)
+
+        if len(result) <= 0:
+            # Completely new save
+            for game in scores:
+                clock = '0'
+                if game[GAME_CLOCK] != 0:
+                    clock = game[GAME_CLOCK]
+
+                scorebox = Score(
+                    year = DEFAULT_YEAR,
+                    week = week,
+                    away_name = game[AWAY_NAME].encode('ascii', 'ignore'),
+                    away_score = int(game[AWAY_SCORE]),
+                    game_clock = clock,
+                    game_day = game[GAME_DAY].encode('ascii', 'ignore'),
+                    game_status = game[GAME_STATUS],
+                    game_time = game[GAME_TIME],
+                    home_name = game[HOME_NAME].encode('ascii', 'ignore'),
+                    home_score = int(game[HOME_SCORE]),
+                    timestamp = datetime.datetime.now()
+                    )
+
+                scorebox.put()
+        else:
+            current = {}
+            for scorebox in result:
+                # Find the fresh score
+                for game in scores:
+                    if game[AWAY_NAME] == scorebox.away_name:
+                        current = game
+                        break
+
+                clock = '0'
+                if current[GAME_CLOCK] != 0:
+                    clock = current[GAME_CLOCK]
+
+                scorebox.away_score = int(current[AWAY_SCORE])
+                scorebox.home_score = int(current[HOME_SCORE])
+                scorebox.game_clock = clock
+                scorebox.game_status = current[GAME_STATUS]
+                scorebox.timestamp = datetime.datetime.now()
+                scorebox.put()
 
 app = webapp2.WSGIApplication([('/spread', MainPage)],
                               debug=True)
