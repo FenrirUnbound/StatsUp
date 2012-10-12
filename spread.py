@@ -13,6 +13,15 @@ from models.score import Score
 # Week 1 == Sept 5, 2012
 AWAY_NAME = 4
 AWAY_SCORE = 5
+DAYS = {
+    'MONDAY': 0,
+    'TUESDAY': 1,
+    'WEDNESDAY': 2,
+    'THURSDAY': 3,
+    'FRIDAY': 4,
+    'SATURDAY': 5,
+    'SUNDAY': 6
+    }
 DEFAULT_WEEK = 6  #For testing purposes only
 DEFAULT_YEAR = 2012
 GAME_CLOCK = 3
@@ -44,10 +53,11 @@ class MainPage(webapp2.RequestHandler):
             self._save_scores(week, scores)
         else:
             # Format the data for client consumption
-            scores = self_format_scores(scores)
+            scores = self._format_scores(scores)
 
         spread = self._fetch_spread(spreadsheet, worksheet)
 
+        # Load the return object with the appropriate data
         result['odds'] = spread['odds']
         result['margin'] = spread['margin']
         result['scoreboard'] = scores
@@ -62,6 +72,20 @@ class MainPage(webapp2.RequestHandler):
         self.response.out.write(json.dumps(result, indent = 4))
 
     def _is_update_required(self, scores):
+        if len(scores) > 0:
+            # This should be further optimized
+            today = datetime.datetime.today().weekday()
+            if today == DAYS['WEDNESDAY']:
+                return False
+            elif today == DAYS['FRIDAY']:
+                logging.info('friday')
+                return False
+            elif today == DAYS['SATURDAY']:
+                return False
+
+            #logging.info(datetime.datetime.today().weekday())
+            #logging.info(scores)
+
         return True
 
     def _fetch_scores(self):
@@ -214,16 +238,13 @@ class MainPage(webapp2.RequestHandler):
         if len(result) <= 0:
             # Completely new save
             for game in scores:
-                clock = '0'
-                if game[GAME_CLOCK] != 0:
-                    clock = game[GAME_CLOCK]
 
                 scorebox = Score(
                     year = DEFAULT_YEAR,
                     week = week,
                     away_name = game[AWAY_NAME].encode('ascii', 'ignore'),
                     away_score = int(game[AWAY_SCORE]),
-                    game_clock = clock,
+                    game_clock = str(game[GAME_CLOCK]),
                     game_day = game[GAME_DAY].encode('ascii', 'ignore'),
                     game_status = game[GAME_STATUS],
                     game_time = game[GAME_TIME],
@@ -236,22 +257,24 @@ class MainPage(webapp2.RequestHandler):
         else:
             current = {}
             for scorebox in result:
-                # Find the fresh score
+                # Find the related game score
                 for game in scores:
                     if game[AWAY_NAME] == scorebox.away_name:
                         current = game
                         break
 
-                clock = '0'
-                if current[GAME_CLOCK] != 0:
-                    clock = current[GAME_CLOCK]
+                key = scorebox.key()
+                matchup = Score.get(key)
 
-                scorebox.away_score = int(current[AWAY_SCORE])
-                scorebox.home_score = int(current[HOME_SCORE])
-                scorebox.game_clock = clock
-                scorebox.game_status = current[GAME_STATUS]
-                scorebox.timestamp = datetime.datetime.now()
-                scorebox.put()
+                # Update
+                matchup.away_score = int(current[AWAY_SCORE])
+                matchup.home_score = int(current[HOME_SCORE])
+                matchup.game_clock = str(current[GAME_CLOCK])
+                matchup.game_status = current[GAME_STATUS]
+                matchup.timestamp = datetime.datetime.now()
+                
+                #Push update
+                matchup.put()
 
 app = webapp2.WSGIApplication([('/spread', MainPage)],
                               debug=True)
