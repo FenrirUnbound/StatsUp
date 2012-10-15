@@ -14,13 +14,13 @@ from models.score import Score
 AWAY_NAME = 4
 AWAY_SCORE = 5
 DAYS = {
-    'MONDAY': 0,
-    'TUESDAY': 1,
-    'WEDNESDAY': 2,
-    'THURSDAY': 3,
-    'FRIDAY': 4,
-    'SATURDAY': 5,
-    'SUNDAY': 6
+    'MON': 0,
+    'TUE': 1,
+    'WED': 2,
+    'THU': 3,
+    'FRI': 4,
+    'SAT': 5,
+    'SUN': 6
     }
 DEFAULT_WEEK = 6  #For testing purposes only
 DEFAULT_YEAR = 2012
@@ -31,7 +31,9 @@ GAME_TIME = 1
 HTTP_OK = 200
 HOME_NAME = 6
 HOME_SCORE = 7
+THRESHOLD = 5
 URL_SCOREBOARD = 'http://www.nfl.com/liveupdate/scorestrip/scorestrip.json'
+UTC_OFFSET = -4
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -63,7 +65,6 @@ class MainPage(webapp2.RequestHandler):
         result['scoreboard'] = scores
         result['spread'] = spread['spread']
 
-
         # TODO: scores might need pre-formatting
         result['scoreboard'] = scores
 
@@ -73,20 +74,48 @@ class MainPage(webapp2.RequestHandler):
 
     def _is_update_required(self, scores):
         if len(scores) > 0:
-            # This should be further optimized
-            today = datetime.datetime.today().weekday()
-            if today == DAYS['WEDNESDAY']:
-                return False
-            elif today == DAYS['FRIDAY']:
-                logging.info('friday')
-                return False
-            elif today == DAYS['SATURDAY']:
+            #Shouldn't update if we're querying an archived week
+            if scores[0].week != self._get_default_week():
                 return False
 
-            #logging.info(datetime.datetime.today().weekday())
-            #logging.info(scores)
+            today = datetime.datetime.now()
+            for game in scores:
+                # today is a gameday
+                if today.weekday() == DAYS[game.game_day.upper()]:
+                    offset = 12   # !!! Assume all games are in the afternoon
+                    index = game.game_time.index(':')
+                    game_hour = int(game.game_time[:index]) + offset
+                    game_minute = int(game.game_time[(index+1):])
 
-        return True
+                    # Check if the game has already started
+                    if game_hour > (today.hour + UTC_OFFSET):
+                        # Don't fetch if the game is over
+                        if 'Final' in game.game_status:
+                            continue
+                        elif 'final' in game.game_status:
+                            continue
+
+                        # Check if timestamp is stale
+                        time_delta = today - game.timestamp
+                        if time_delta >= datetime.timedelta(minutes=THRESHOLD):
+                            return True
+                    elif game_hour == (today.hour + UTC_OFFSET):
+                        if game_minute >= today.minute:
+                            # It's hard to believe a game is less than an hour
+                            # Check if timestamp is stale
+                            time_delta = today - game.timestamp
+                            threshold = datetime.timedelta(minutes=THRESHOLD)
+                            if time_delta >= threshold:
+                                return True
+                else:
+                    # Only update if the timestamp is stale by at least a day
+                    if today.weekday() != game.timestamp.weekday():
+                        return True
+        else:
+            # Query set is empty
+            return True
+
+        return False
 
     def _fetch_scores(self):
         response = {}
@@ -238,7 +267,6 @@ class MainPage(webapp2.RequestHandler):
         if len(result) <= 0:
             # Completely new save
             for game in scores:
-
                 scorebox = Score(
                     year = DEFAULT_YEAR,
                     week = week,
