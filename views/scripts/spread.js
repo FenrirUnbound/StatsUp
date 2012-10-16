@@ -112,7 +112,8 @@ var engageSpread_ = (function() {
         .text(NAMES[teamName]);
 
     // Dynamically embed the total score in the detail drawer
-    $('#totalScore > li:nth-child(2)', spreadDetails[i]).text(totalScore);
+    $('#totalScore > li:nth-child(2)', spreadDetails[i])
+        .text(totalScore + ' (' + combinedScore + ')');
     
     // Emphasis the player's choice on over/under margin
     if(current[index]['margin']) {
@@ -270,17 +271,18 @@ var formatSpread_ = (function(spread) {
 var setupScoreboard_ = (function(data) {
   var awayName,
       current = {},
-      gameScoreData = data.reverse(),
       favorite,
       gameStatus,
       homeName,
+      scoreboardLength,
       margin,
       result = {'scores': []};
 
   scoreboard_ = data;
+  scoreboardLength = scoreboard_.length;
 
-  for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
-    current = gameScoreData[i];
+  for(var i = 0; i < scoreboardLength; i += 1) {
+    current = scoreboard_[i];
     
     awayName = NAMES[current[AWAY_NAME]];
     gameStatus = current[GAME_STATUS];
