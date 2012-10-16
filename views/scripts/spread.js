@@ -51,29 +51,15 @@ var margin_ = {},
     spread_ = {};
 
 $(document).ready(function() {
-  var scoreboardUrl = 'http://matsumoto26sunday.appspot.com/scoreboard',
-      spreadUrl = 'http://matsumoto26sunday.appspot.com/pool',
+  var dataUrl = 'http://matsumoto26sunday.appspot.com/spread',
       templateName = '',
       templates = $('script[data-jsv-tmpl]');
 
-  /* Until we combine the two endpoints, the scoreboard data is dependant
-   * upon the spread data (for line, over/under, total).
-   */
   // Get spread data
-  // TODO: retry until the data actually loads
-  $.when($.get(spreadUrl))
-      .done(function(spreadData) {
-        // Setup spread
-        $.when(setupSpread_(spreadData))
-            .done(function() {
-              // Get scoreboard
-              $.when($.get(scoreboardUrl))
-                  .done(function(scoreboardData) {
-                      // Setup scoreboard
-                      setupScoreboard_(scoreboardData);
-                  });
-            });
-      });
+  $.when($.get(dataUrl)).done(function(data) {
+    setupSpread_(data);
+    setupScoreboard_(data['scoreboard']);
+  });
 
   // Load templates from DOM
   for(var i = templates.length - 1; i >= 0; i -= 1) {
@@ -284,14 +270,14 @@ var formatSpread_ = (function(spread) {
 var setupScoreboard_ = (function(data) {
   var awayName,
       current = {},
-      gameScoreData = ($.parseJSON(data))['ss'].reverse(),
+      gameScoreData = data.reverse(),
       favorite,
       gameStatus,
       homeName,
       margin,
       result = {'scores': []};
 
-  scoreboard_ = ($.parseJSON(data))['ss'];
+  scoreboard_ = data;
 
   for(var i = gameScoreData.length - 1; i >= 0; i -= 1) {
     current = gameScoreData[i];
