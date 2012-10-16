@@ -1,4 +1,4 @@
 cron:
 - description: ensure scoreboard data is not stale
   url: /scores?save=true
-  schedule: every day 01:00
+  schedule: every day 06:00
