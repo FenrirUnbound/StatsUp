@@ -14,13 +14,13 @@ from models.score import Score
 AWAY_NAME = 4
 AWAY_SCORE = 5
 DAYS = {
-    'MON': 0,
-    'TUE': 1,
-    'WED': 2,
-    'THU': 3,
-    'FRI': 4,
-    'SAT': 5,
-    'SUN': 6
+    'MON': 1,
+    'TUE': 2,
+    'WED': 3,
+    'THU': 4,
+    'FRI': 5,
+    'SAT': 6,
+    'SUN': 0
     }
 DEFAULT_WEEK = 6  #For testing purposes only
 DEFAULT_YEAR = 2012
@@ -103,6 +103,8 @@ class MainPage(webapp2.RequestHandler):
                         if game_minute >= today.minute:
                             # It's hard to believe a game is less than an hour
                             # Check if timestamp is stale
+                            logging.info('game has started')
+
                             time_delta = today - game.timestamp
                             threshold = datetime.timedelta(minutes=THRESHOLD)
                             if time_delta >= threshold:
