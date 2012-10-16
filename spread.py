@@ -104,7 +104,6 @@ class MainPage(webapp2.RequestHandler):
                         if game_minute >= today.minute:
                             # It's hard to believe a game is less than an hour
                             # Check if timestamp is stale
-                            logging.info('game has started')
 
                             time_delta = today - game.timestamp
                             threshold = datetime.timedelta(minutes=THRESHOLD)
