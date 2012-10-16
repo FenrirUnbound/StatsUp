@@ -26,6 +26,7 @@ DEFAULT_WEEK = 6  #For testing purposes only
 DEFAULT_YEAR = 2012
 GAME_CLOCK = 3
 GAME_DAY = 0
+GAME_ID = 10
 GAME_STATUS = 2
 GAME_TIME = 1
 HTTP_OK = 200
@@ -254,6 +255,7 @@ class MainPage(webapp2.RequestHandler):
 
         query = Score.all()
         query.filter('week =', week)
+        query.order('game_id')
         result = query.fetch(25)
         
         return result
@@ -276,6 +278,7 @@ class MainPage(webapp2.RequestHandler):
                     away_score = int(game[AWAY_SCORE]),
                     game_clock = str(game[GAME_CLOCK]),
                     game_day = game[GAME_DAY].encode('ascii', 'ignore'),
+                    game_id = int(game[GAME_ID]),
                     game_status = game[GAME_STATUS],
                     game_time = game[GAME_TIME],
                     home_name = game[HOME_NAME].encode('ascii', 'ignore'),
