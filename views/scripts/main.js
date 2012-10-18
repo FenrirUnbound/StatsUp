@@ -84,7 +84,7 @@ spread = (function() {
         teamName,
         totalScore;
 
-    current = spread[person];
+    current = spread_[person];
     for(var i = scoreboard_.length - 1; i >= 0; i -= 1) {
       index = 0;
 
@@ -385,7 +385,9 @@ spread = (function() {
     'init': function(data) {
       setupSpread_(data);
       setupScoreboard_(data['scoreboard']);
-    }
+    },
+    'scoreboard': scoreboard_,
+    'spread': spread_
   }
   
 })();
