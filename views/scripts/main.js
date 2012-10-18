@@ -67,8 +67,8 @@ spread = (function() {
 
   var margin_ = {},
       odds_ = {},
-      scoreboard_ = {},
-      spread_ = {};
+      scoreboard = {},
+      spread = {};
 
   function engageSpread_() {
     var difference,
@@ -84,22 +84,22 @@ spread = (function() {
         teamName,
         totalScore;
 
-    current = spread_[person];
-    for(var i = scoreboard_.length - 1; i >= 0; i -= 1) {
+    current = spread[person];
+    for(var i = scoreboard.length - 1; i >= 0; i -= 1) {
       index = 0;
 
       //Find which spread applies to this game
       for(var j = current.length - 1; j >= 0; j -= 1) {
-        combinedScore = parseInt(scoreboard_[i][AWAY_SCORE]) +
-            parseInt(scoreboard_[i][HOME_SCORE]);
+        combinedScore = parseInt(scoreboard[i][AWAY_SCORE]) +
+            parseInt(scoreboard[i][HOME_SCORE]);
         teamName = current[j]['team'];
         totalScore = current[j]['total'];
       
         //Fix for differences in Arizona short-hand spelling
         teamName = (teamName === 'AZ') ? 'ARI' : teamName;
       
-        if(scoreboard_[i][AWAY_NAME] === teamName || 
-            scoreboard_[i][HOME_NAME] === teamName) {
+        if(scoreboard[i][AWAY_NAME] === teamName || 
+            scoreboard[i][HOME_NAME] === teamName) {
           index = i;
           break;
         }
@@ -131,7 +131,7 @@ spread = (function() {
       }
 
       // Only calculate spread-line on games that are started
-      if(scoreboard_[i][GAME_STATUS] === 'Pregame')
+      if(scoreboard[i][GAME_STATUS] === 'Pregame')
         continue;
         
       /*
@@ -139,11 +139,11 @@ spread = (function() {
        */
 
       // Check for winner
-      if(scoreboard_[i][AWAY_NAME] === teamName) {
-        difference = scoreboard_[i][AWAY_SCORE] - scoreboard_[i][HOME_SCORE];
+      if(scoreboard[i][AWAY_NAME] === teamName) {
+        difference = scoreboard[i][AWAY_SCORE] - scoreboard[i][HOME_SCORE];
       }
       else {
-        difference = scoreboard_[i][HOME_SCORE] - scoreboard_[i][AWAY_SCORE];
+        difference = scoreboard[i][HOME_SCORE] - scoreboard[i][AWAY_SCORE];
       }
     
       // Weight the difference with the game odds
@@ -189,8 +189,8 @@ spread = (function() {
       }
     
       // Highlight correct margin
-      margin = margin_[NAMES[scoreboard_[i][AWAY_NAME]].toUpperCase()] ||
-          margin_[NAMES[scoreboard_[i][HOME_NAME]].toUpperCase()];
+      margin = margin_[NAMES[scoreboard[i][AWAY_NAME]].toUpperCase()] ||
+          margin_[NAMES[scoreboard[i][HOME_NAME]].toUpperCase()];
       if(margin && current[j]['margin']) {
         // Check if UNDER is successful
         if(current[index]['margin'] === 'UN' && combinedScore < margin) {
@@ -277,11 +277,11 @@ spread = (function() {
         margin,
         result = {'scores': []};
 
-    scoreboard_ = data;
-    scoreboardLength = scoreboard_.length;
+    scoreboard = data;
+    scoreboardLength = scoreboard.length;
 
     for(var i = 0; i < scoreboardLength; i += 1) {
-      current = scoreboard_[i];
+      current = scoreboard[i];
     
       awayName = NAMES[current[AWAY_NAME]];
       gameStatus = current[GAME_STATUS];
@@ -365,7 +365,7 @@ spread = (function() {
 
     margin_ = data['margin'];
     odds_ = data['odds'];
-    spread_ = formatSpread_(spreadSelection);
+    spread = formatSpread_(spreadSelection);
 
     players = Object.keys(spreadSelection).sort().reverse();
     for(var i = players.length - 1; i >= 0; i -= 1) {
@@ -386,8 +386,8 @@ spread = (function() {
       setupSpread_(data);
       setupScoreboard_(data['scoreboard']);
     },
-    'scoreboard': scoreboard_,
-    'spread': spread_
+    'scoreboard': scoreboard,
+    'spread': spread
   }
   
 })();
