@@ -1,5 +1,5 @@
 application: matsumoto26sunday
-version: 2
+version: 3
 runtime: python27
 api_version: 1
 threadsafe: false
@@ -9,10 +9,14 @@ handlers:
   script: stats.py
 - url: /createEleven
   script: create_eleven.py
+- url: /spread
+  script: spread.py
 - url: /pool
   script: pool.py
 - url: /scoreboard
   script: scoreboard.py
+- url: /scores
+  script: scores.py
 - url: /templates
   script: templates.py
 - url: /favicon\.ico

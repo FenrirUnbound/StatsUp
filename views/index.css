@@ -20,15 +20,64 @@ body {
     line-height: 1.5em;
 }
 
+label.selectButton {
+    border: 3px solid #fff;
+    border-radius: 20px;
+    color: #fc6;
+    padding: 1.5% 25% 1.5% 25%;
+    width: 100%;
+}
+
+li span {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+section.scorebox {
+    border: 3px solid #fc6;
+    border-radius: 11px;
+    padding: 1.125%;
+    width: 100%;
+}
+
+section.spreadDetails {
+    background: #fff;
+    border: 3px solid #fc6;
+    border-top: 0px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px; 
+    height: 0px;
+    margin: 0px auto;
+    overflow: hidden;
+    padding: 1.125%;
+    -webkit-transition: all 0.5s ease-out 0s;
+    -moz-transition: all 0.5s ease-out 0s;
+    -o-transition: all 0.5s ease-out 0s;
+    -ms-transition: all 0.5s ease-out 0s;
+    transition: all 0.5s ease-out 0s;
+    width: 85%;
+    visibility: hidden;
+}
+
+section.spreadForm {
+    background: #036; 
+    border: 3px solid #fff;
+    border-radius: 11px;
+    margin: 2.25%;
+    padding: 5%;
+    text-align: center;
+}
+
 select {
     font-size: 1.0em;
+    margin: 0em 0em 1.5em 0em;
 }
 
 ul {
     list-style: none;
 }
 
-.gameClock {
+ul.hbox {
     display: box;
     display: -moz-box;
     display: -webkit-box;
@@ -38,107 +87,48 @@ ul {
     width: 100%;
 }
 
-.gameClock li {
+ul.hbox li {
     box-flex: 1;
     -moz-box-flex: 1;
     -webkit-box-flex: 1;
     text-align: center;
+    width: 100%;
+}
+
+ul.spreadLine {
+    background: #fff;
+    border: 3px solid #369;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
 }
 
 .green {
     background: #cfc;
 }
 
-.hbox {
-    display: box;
-    display: -moz-box;
-    display: -webkit-box;
-    box-orient: horizontal;
-    -moz-box-orient: horizontal;
-    -webkit-box-orient: horizontal;
-    width: 100%;
-}
-
-.hbox > li {
-    box-flex: 1;
-    -moz-box-flex: 1;
-    -webkit-box-flex: 1;
-    text-align: center;
-    width: 100%;
-}
-
 .red {
     background: #fcc;
-}
-
-.scorebox {
-    border: 3px solid #fc6;
-    border-radius: 11px;
-    -moz-border-radius: 11px;
-    -webkit-border-radius: 11px;
-    margin: 2.25%;
-    padding: 1.125%;
-    width: 95.5%;
-}
-
-.selectButton {
-    border: 3px solid #fff;
-    border-radius: 20px;
-    -moz-border-radius: 20px;
-    -webkit-border-radius: 20px;
-    color: #fc6;
-    padding: 1.5% 25% 1.5% 25%;
-}
-
-.spreadForm {
-    background: #036; 
-    border: 3px solid #fff;
-    border-radius: 11px;
-    -moz-border-radius: 11px;
-    -webkit-border-radius: 11px;
-    margin: 2.25%;
-    padding: 5%;
-    text-align: center;
-}
-
-.spreadForm ul li:first-child {
-    margin: 0em 0em 1.5em 0em;
-}
-
-.spreadLine {
-    background: #fff;
-    border: 3px solid #369;
-    border-radius: 10px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    color: #036;
-    display: box;
-    display: -moz-box;
-    display: -webkit-box;
-    box-orient: horizontal;
-    -moz-box-orient: horizontal;
-    -webkit-box-orient: horizontal;
-    box-pack: center;
-    -moz-box-pack: center;
-    -webkit-box-pack: center;
-    line-height: 1.25em;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
 }
 
 .white {
     background: #fff;
 }
 
+/* Media Query for screen size */
 @media (min-width: 920px) {
-    .scorebox {
+    article.scoreboard {
         float: left;
         margin: 0.9%;
         width: 31.533333333%;
     }
     
-    .spreadForm {
+    article.scoreboard:nth-child(3n+1) {
+        clear: left;
+    }
+    
+    section.spreadForm {
         margin-left: auto;
         margin-right: auto;
         padding: 2.25%;
@@ -147,28 +137,33 @@ ul {
 }
 
 @media (max-width: 920px) {
-    .scorebox {
+    article.scoreboard {
         float: left;
         margin: 1.0%;
         width: 47.75%;
     }
     
-    .spreadForm {
-        margin-left: 26.125%;
-        margin-right: 26.125%;
+    /* Prevents awkward floating behavior when drawer is engaged */
+    article.scoreboard:nth-child(odd) {
+        clear: left;
+    }
+    
+    section.spreadForm {
+        margin-left: auto;
+        margin-right: auto;
         padding: 2.25%;
         width: 47.75%;
     }
 }
 
 @media (max-width: 600px) {
-    .scorebox {
+    article.scoreboard {
         float: none;
         margin: 2.25%;
         width: 95.5%;
     }
     
-    .spreadForm {
+    section.spreadForm {
         margin: 2.25%;
         padding: 5%;
         width: 95.5%;
