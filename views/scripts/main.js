@@ -281,8 +281,10 @@ spread = (function() {
         
         // Check for infinite-loop threshold
         count += 1;
-        if(count >= LOOP_THRESHOLD)
+        if(count >= LOOP_THRESHOLD) {
+          console.log(players[i]);
           break;
+        }
       }
     }
 
