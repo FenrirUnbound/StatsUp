@@ -28,6 +28,7 @@ spread = (function() {
       HOME_NAME = 6
       HOME_SCORE = 7,
       HOME_TEAM = 1,
+      LOOP_THRESHOLD = 100,
       NAMES = {
         'ARI': 'Arizona',
         'ATL': 'Atlanta',
@@ -81,6 +82,7 @@ spread = (function() {
         person = $('#selectSpread').find('option:selected').text(),
         scores = $('#gameScores > article > section:nth-child(1)'),
         spreadDetails = $('#gameScores > article > section:nth-child(2)'),
+        tally = 0,
         teamName,
         totalScore;
 
@@ -117,7 +119,7 @@ spread = (function() {
       $('#totalScore > li:nth-child(2)', spreadDetails[i])
           .text(totalScore + ' (' + combinedScore + ')');
     
-      // Emphasis the player's choice on over/under margin
+      // Emphasize the player's choice on over/under margin
       if(current[index]['margin']) {
         element = $('#margin > li:nth-child(1)', spreadDetails[i]);
         element.html('Over/Under');  // Reset
@@ -157,16 +159,18 @@ spread = (function() {
       if(difference > 0) {
         // Entire scorebox
         $(scores[i]).removeClass('white').removeClass('red').addClass('green');
-        // Spread details drawer
+        // Spread-details drawer
         $('#teamChoice > li:nth-child(2)', spreadDetails[i])
             .removeClass('white')
             .removeClass('red')
             .addClass('green');
+
+        tally += 1;
       }
       else if(difference < 0) {
         // Entire scorebox
         $(scores[i]).removeClass('white').removeClass('green').addClass('red');
-        // Spread details drawer
+        // Spread-details drawer
         $('#teamChoice > li:nth-child(2)', spreadDetails[i])
             .removeClass('white')
             .removeClass('green')
@@ -180,6 +184,11 @@ spread = (function() {
             .removeClass('red')
             .removeClass('white')
             .addClass('green');
+
+        tally += 1;
+        // Extra point for getting exact total score.
+        if(totalScore === combinedScore)
+          tally += 1;
       }
       else {
         $('#totalScore > li:nth-child(2)', spreadDetails[i])
@@ -198,6 +207,8 @@ spread = (function() {
               .removeClass('red')
               .removeClass('white')
               .addClass('green');
+              
+          tally += 1;
         }
         // Check if OVER is successful
         else if(current[index]['margin'] === 'OV' && combinedScore > margin) {
@@ -205,6 +216,8 @@ spread = (function() {
               .removeClass('red')
               .removeClass('white')
               .addClass('green');
+              
+          tally += 1;
         }
         // Failed margin
         else {
@@ -215,15 +228,19 @@ spread = (function() {
         }
       }
     }
+
+    console.log('tally: ' + tally);
   }
   
   function formatSpread_(spread) {
-    var current = [],
+    var count,
+        current = [],
         players = Object.keys(spread),
         result = {},
         working;
 
     for(var i = players.length - 1; i >= 0; i -= 1) {
+      count = 0;
       result[players[i]] = [];
       current = spread[players[i]];
 
@@ -261,6 +278,11 @@ spread = (function() {
             current.unshift(working[2]);
           }
         }
+        
+        // Check for infinite-loop threshold
+        count += 1;
+        if(count >= LOOP_THRESHOLD)
+          break;
       }
     }
 
