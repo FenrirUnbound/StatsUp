@@ -76,7 +76,7 @@ class MainPage(webapp2.RequestHandler):
         return result
 
     def _get_default_week(self):
-        week_one = datetime.datetime(2012, 9, 5, 0, 0, 0)
+        week_one = datetime.datetime(2012, 9, 6, 0, 0, 0)
         current = datetime.datetime.now()
         
         delta = current - week_one
