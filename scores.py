@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import lib.constants as constants
 import datetime
 import json
 import logging
@@ -9,29 +10,17 @@ from google.appengine.api import urlfetch
 from google.appengine.ext.webapp.util import run_wsgi_app
 from models.score import Score
 
-AWAY_NAME = 4
-AWAY_SCORE = 5
-DEFAULT_YEAR = 2012
-GAME_CLOCK = 3
-GAME_DAY = 0
-GAME_ID = 10
-GAME_STATUS = 2
-GAME_TIME = 1
-HTTP_OK = 200
-HOME_NAME = 6
-HOME_SCORE = 7
-URL_SCOREBOARD = 'http://www.nfl.com/liveupdate/scorestrip/scorestrip.json'
-
 class MainPage(webapp2.RequestHandler):
     def get(self):
         scores = {}
         result = {}
         to_save = self.request.get('save')
-        
+
+        scores = json.loads(self._fetch_scores())[constants.SCORES_FETCHED]
+
         if to_save is None or len(to_save) == 0:
-            pass
+            result = scores
         else:
-            scores = json.loads(self._fetch_scores())['ss']
             week = self._get_default_week()
             self._save_scores(week, scores)
             result = {'success': 'true'}
@@ -45,10 +34,10 @@ class MainPage(webapp2.RequestHandler):
         result = {}
         rpc = urlfetch.create_rpc()
 
-        urlfetch.make_fetch_call(rpc, URL_SCOREBOARD)
+        urlfetch.make_fetch_call(rpc, constants.URL_SCOREBOARD)
         try:
             response = rpc.get_result()
-            if response.status_code == HTTP_OK:
+            if response.status_code == constants.HTTP_OK:
                 counter = 100
                 length = 0
                 text = response.content
@@ -95,17 +84,17 @@ class MainPage(webapp2.RequestHandler):
             # Completely new save
             for game in scores:
                 scorebox = Score(
-                    year = DEFAULT_YEAR,
+                    year = constants.YEAR,
                     week = week,
-                    away_name = game[AWAY_NAME].encode('ascii', 'ignore'),
-                    away_score = int(game[AWAY_SCORE]),
-                    game_clock = str(game[GAME_CLOCK]),
-                    game_day = game[GAME_DAY].encode('ascii', 'ignore'),
-                    game_id = int(game[GAME_ID]),
-                    game_status = game[GAME_STATUS],
-                    game_time = game[GAME_TIME],
-                    home_name = game[HOME_NAME].encode('ascii', 'ignore'),
-                    home_score = int(game[HOME_SCORE]),
+                    away_name = game[constants.AWAY_NAME].encode('ascii', 'ignore'),
+                    away_score = int(game[constants.AWAY_SCORE]),
+                    game_clock = str(game[constants.GAME_CLOCK]),
+                    game_day = game[constants.GAME_DAY].encode('ascii', 'ignore'),
+                    game_id = int(game[constants.GAME_ID]),
+                    game_status = game[constants.GAME_STATUS],
+                    game_time = game[constants.GAME_TIME],
+                    home_name = game[constants.HOME_NAME].encode('ascii', 'ignore'),
+                    home_score = int(game[constants.HOME_SCORE]),
                     timestamp = datetime.datetime.now()
                     )
 
@@ -115,7 +104,7 @@ class MainPage(webapp2.RequestHandler):
             for scorebox in result:
                 # Find the related game score
                 for game in scores:
-                    if game[AWAY_NAME] == scorebox.away_name:
+                    if game[constants.AWAY_NAME] == scorebox.away_name:
                         current = game
                         break
 
@@ -123,10 +112,10 @@ class MainPage(webapp2.RequestHandler):
                 matchup = Score.get(key)
 
                 # Update
-                matchup.away_score = int(current[AWAY_SCORE])
-                matchup.home_score = int(current[HOME_SCORE])
-                matchup.game_clock = str(current[GAME_CLOCK])
-                matchup.game_status = current[GAME_STATUS]
+                matchup.away_score = int(current[constants.AWAY_SCORE])
+                matchup.home_score = int(current[constants.HOME_SCORE])
+                matchup.game_clock = str(current[constants.GAME_CLOCK])
+                matchup.game_status = current[constants.GAME_STATUS]
                 matchup.timestamp = datetime.datetime.now()
                 
                 #Push update
