@@ -20,15 +20,18 @@ class MainPage(webapp2.RequestHandler):
         if week is None or len(week) == 0:
             week = self._get_current_week()
 
-        result = self._query_scores(week)
-        # Check how stale the score is
-        if (to_save is None or len(to_save) == 0 or
-                self._is_update_required(result)): 
-            result = json.loads(self._fetch_scores())[constants.SCORES_FETCHED]
-            self._save_scores(week, result)
+        if to_save is None or len(to_save) == 0:
+            result = self._query_scores(week)
+            if self._is_update_required(result):
+                result = (self._fetch_scores())[constants.SCORES_FETCHED]
+                self._save_scores(week, result)
+            else:
+                # Format the data for client consumption
+                result = self._format_scores(result)
         else:
-            # Format the data for client consumption
-            result = self._format_scores(result)
+            # Always do a fresh fetch/save when given given the option
+            result = (self._fetch_scores())[constants.SCORES_FETCHED]
+            self._save_scores(week, result)            
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -47,6 +50,7 @@ class MainPage(webapp2.RequestHandler):
                 length = 0
                 text = response.content
 
+                # Format the incoming data into proper json
                 while length != text.__len__():
                     length = text.__len__()
                     text = text.replace(',,', ',0,')
@@ -57,7 +61,7 @@ class MainPage(webapp2.RequestHandler):
                     else:
                         break
 
-                result = text
+                result = json.loads(text)
             else:
                 result = {
                     'status_code': response.status_code
@@ -87,10 +91,8 @@ class MainPage(webapp2.RequestHandler):
         return result
 
     def _get_current_week(self):
-        week_one = datetime.datetime(2012, 9, 6, 0, 0, 0)
         current = datetime.datetime.now()
-        
-        delta = current - week_one
+        delta = current - constants.WEEK_ONE
         
         return ((delta.days / 7) + 1)
 
@@ -161,7 +163,7 @@ class MainPage(webapp2.RequestHandler):
         result = {}
 
         query.filter('week =', week)
-        result = query.fetch(25)
+        result = query.fetch(constants.TOTAL_TEAMS)
 
         if len(result) <= 0:
             # Completely new save
@@ -186,6 +188,7 @@ class MainPage(webapp2.RequestHandler):
 
                 scorebox.put()
         else:
+            # Update the scores
             current = {}
             for scorebox in result:
                 # Find the related game score
