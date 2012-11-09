@@ -1,7 +1,7 @@
 var spread = spread || {};
 
 $(document).ready(function() {
-  var dataUrl = 'http://matsumoto26sunday.appspot.com/spread',
+  var dataUrl = 'http://matsumoto26sunday.appspot.com/all',
       templateName = '',
       templates = $('script[data-jsv-tmpl]');
 
