@@ -1,3 +1,5 @@
+import datetime
+
 AWAY_NAME = 4
 AWAY_SCORE = 5
 DAYS = {
@@ -22,4 +24,5 @@ THRESHOLD = 5
 TOTAL_TEAMS = 32
 URL_SCOREBOARD = 'http://www.nfl.com/liveupdate/scorestrip/scorestrip.json'
 UTC_OFFSET = -4
+WEEK_ONE = datetime.datetime(2012, 9, 6, 0, 0, 0)
 YEAR = 2012
