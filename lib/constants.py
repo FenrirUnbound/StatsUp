@@ -19,6 +19,13 @@ GAME_TIME = 1
 HTTP_OK = 200
 HOME_NAME = 6
 HOME_SCORE = 7
+MARGIN = {
+    'OVER': 1,
+    'OV': 1,
+    'NONE': 0
+    'UNDER': -1,
+    'UN': -1
+}
 SCORES_FETCHED = 'ss'
 THRESHOLD = 5
 TOTAL_TEAMS = 32
