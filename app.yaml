@@ -5,6 +5,8 @@ api_version: 1
 threadsafe: false
 
 handlers:
+- url: /all
+  script: all.py
 - url: /stats
   script: stats.py
 - url: /createEleven
