@@ -329,7 +329,7 @@ class MainPage(webapp2.RequestHandler):
                 #Push update
                 matchup.put()
 
-app = webapp2.WSGIApplication([('/spread', MainPage)],
+app = webapp2.WSGIApplication([('/all', MainPage)],
                               debug=True)
 
 def main():
