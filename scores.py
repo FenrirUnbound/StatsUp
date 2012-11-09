@@ -20,6 +20,7 @@ class MainPage(webapp2.RequestHandler):
         if week is None or len(week) == 0:
             week = self._get_current_week()
 
+        # Always do a fresh fetch/save when given given the option
         if to_save is None or len(to_save) == 0:
             result = self._query_scores(week)
             if self._is_update_required(result):
@@ -29,7 +30,6 @@ class MainPage(webapp2.RequestHandler):
                 # Format the data for client consumption
                 result = self._format_scores(result)
         else:
-            # Always do a fresh fetch/save when given given the option
             result = (self._fetch_scores())[constants.SCORES_FETCHED]
             self._save_scores(week, result)            
 
