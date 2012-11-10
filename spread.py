@@ -21,6 +21,7 @@ class MainPage(webapp2.RequestHandler):
 
         result = self._query_database(week)
         if result is None or len(result) == 0:
+            # Need to fetch from spreadsheet
             logging.info('empty')
             pass
         else:
@@ -41,7 +42,7 @@ class MainPage(webapp2.RequestHandler):
         for person in players:
             result[person] = [
                 self.request.get(person)
-            ]
+                ]
         
         #logging.info(result)
 
@@ -55,9 +56,25 @@ class MainPage(webapp2.RequestHandler):
         
         return ((delta.days / 7) + 1)
 
-    # TODO: This
     def _format_query(self, query):
-        result = []
+        result = {}
+
+        for item in query:
+            person = item.person
+            if person not in result:
+                result[person] = [
+                    item.team_name,
+                    item.margin,
+                    item.total_score
+                ]
+            else:
+                # result needs to be array of arrays
+                result[item.person].append([
+                    item.team_name,
+                    item.margin,
+                    item.total_score
+                    ])
+        
         return result
 
     def _query_database(self, week):
@@ -66,6 +83,7 @@ class MainPage(webapp2.RequestHandler):
         
         query = Spread.all()
         query.filter('week =', week)
+        query.order('person')
 
         result = query.fetch(constants.QUERY_LIMIT)
         return result
