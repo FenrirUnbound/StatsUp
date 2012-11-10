@@ -28,10 +28,10 @@ class MainPage(webapp2.RequestHandler):
             result = self._fetch_spreadsheet(spreadsheet, worksheet)
             # NOTE: only saves spread picks, not odds or magin(ie, over/under)
             # odds & margin should be saved with scores
-            self._save_spread(week, result['spread'])
-        else:
-            # Format the data for client consumption
-            result = self._format_query(result)
+            result = result['spread']
+            self._save_spread(week, result)
+
+        result = self._format_query(result)
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -237,7 +237,7 @@ class MainPage(webapp2.RequestHandler):
         result = query.fetch(constants.QUERY_LIMIT)
         return result
 
-    # TODO: Update as well as save
+    # TODO: Only saves. Needs to update as well
     def _save_spread(self, week, spread):
         query = Spread.all()
         result = None
