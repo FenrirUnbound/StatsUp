@@ -22,10 +22,11 @@ HOME_SCORE = 7
 MARGIN = {
     'OVER': 1,
     'OV': 1,
-    'NONE': 0
+    'NONE': 0,
     'UNDER': -1,
     'UN': -1
 }
+QUERY_LIMIT = 1000
 SCORES_FETCHED = 'ss'
 THRESHOLD = 5
 TOTAL_TEAMS = 32
