@@ -31,6 +31,7 @@ class MainPage(webapp2.RequestHandler):
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.out.write(json.dumps(result, indent = 4))
 
+    # TODO: This
     def post(self):
         result = {}
         players = self.request.arguments()
