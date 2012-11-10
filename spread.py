@@ -26,7 +26,9 @@ class MainPage(webapp2.RequestHandler):
         if result is None or len(result) == 0:
             # Need to fetch from spreadsheet
             result = self._fetch_spreadsheet(spreadsheet, worksheet)
-            pass
+            # NOTE: only saves spread picks, not odds or magin(ie, over/under)
+            # odds & margin should be saved with scores
+            self._save_spread(week, result['spread'])
         else:
             # Format the data for client consumption
             result = self._format_query(result)
@@ -55,8 +57,7 @@ class MainPage(webapp2.RequestHandler):
 
     def _fetch_spreadsheet(self, spreadsheet, worksheet):
         current_season = 'S' + str(constants.YEAR)
-        #current_week = self._get_current_week()
-        current_week = 9
+        current_week = self._get_current_week()
         data = None
         drive = Drive()
         index = 0
@@ -235,6 +236,31 @@ class MainPage(webapp2.RequestHandler):
 
         result = query.fetch(constants.QUERY_LIMIT)
         return result
+
+    # TODO: Update as well as save
+    def _save_spread(self, week, spread):
+        query = Spread.all()
+        result = None
+        item = None
+
+        query.filter('week =', week)
+        result = query.fetch(constants.QUERY_LIMIT)
+        
+        if len(result) == 0:
+            #completely new save
+            for person in spread:
+                for line in spread[person]:
+                    item = Spread(
+                        year = constants.YEAR,
+                        week = week,
+                        person = person,
+                        team_name = line[constants.SPREAD_TEAM_NAME],
+                        over_under = line[constants.SPREAD_OVER_UNDER],
+                        total_score = int(line[constants.SPREAD_TOTAL_SCORE])
+                        )
+
+                    item.put()
+
 
 app = webapp2.WSGIApplication([('/spread', MainPage)],
                               debug=True)
