@@ -11,6 +11,7 @@ DAYS = {
     'SAT': 6,
     'SUN': 0
     }
+DEFAULT_WORKSHEET = 'Sheet1'
 GAME_CLOCK = 3
 GAME_DAY = 0
 GAME_ID = 10
