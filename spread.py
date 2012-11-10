@@ -31,6 +31,23 @@ class MainPage(webapp2.RequestHandler):
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.out.write(json.dumps(result, indent = 4))
 
+    def post(self):
+        result = {}
+        players = self.request.arguments()
+        content = self.request.get('content')
+        
+        # Format the data into something more convenient to consume
+        for person in players:
+            result[person] = [
+                self.request.get(person)
+            ]
+        
+        #logging.info(result)
+
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.out.write(json.dumps(result, indent = 4))
+
     def _get_current_week(self):
         current = datetime.datetime.now()
         delta = current - constants.WEEK_ONE
