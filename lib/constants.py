@@ -29,6 +29,11 @@ MARGIN = {
 }
 QUERY_LIMIT = 1000
 SCORES_FETCHED = 'ss'
+SPREAD = {
+    'TEAM_NAME': 0,
+    'OVER_UNDER': 1,
+    'TOTAL_SCORE': 2
+}
 THRESHOLD = 5
 TOTAL_TEAMS = 32
 URL_SCOREBOARD = 'http://www.nfl.com/liveupdate/scorestrip/scorestrip.json'
