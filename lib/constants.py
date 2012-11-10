@@ -11,6 +11,7 @@ DAYS = {
     'SAT': 6,
     'SUN': 0
     }
+DEFAULT_WORKSHEET = 'Sheet1'
 GAME_CLOCK = 3
 GAME_DAY = 0
 GAME_ID = 10
@@ -22,11 +23,15 @@ HOME_SCORE = 7
 MARGIN = {
     'OVER': 1,
     'OV': 1,
-    'NONE': 0
+    'NONE': 0,
     'UNDER': -1,
     'UN': -1
 }
+QUERY_LIMIT = 1000
 SCORES_FETCHED = 'ss'
+SPREAD_OVER_UNDER = 1
+SPREAD_TEAM_NAME = 0
+SPREAD_TOTAL_SCORE = 2
 THRESHOLD = 5
 TOTAL_TEAMS = 32
 URL_SCOREBOARD = 'http://www.nfl.com/liveupdate/scorestrip/scorestrip.json'
