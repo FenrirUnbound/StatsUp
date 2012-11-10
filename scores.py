@@ -8,10 +8,12 @@ import webapp2
 
 from google.appengine.api import urlfetch
 from google.appengine.ext.webapp.util import run_wsgi_app
+from lib.drive import Drive
 from models.score import Score
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
+        odds = self.request.get('odds')
         result = {}
         to_save = self.request.get('save')
         week = self.request.get('week')
@@ -33,9 +35,77 @@ class MainPage(webapp2.RequestHandler):
             result = (self._fetch_scores())[constants.SCORES_FETCHED]
             self._save_scores(week, result)            
 
+        #logging.info(self._fetch_odds(week))
+
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.out.write(json.dumps(result, indent = 4))
+
+    # TODO: This
+    def _fetch_odds(self, week):
+        data = {}
+        drive = Drive()
+        margin = {}
+        odds = 0
+        result = {}
+        spread = {}
+        spreadsheet = ''
+        target = ''
+        worksheet = constants.DEFAULT_WORKSHEET
+
+        # Obtain the correct spread sheet
+        data_sheets = drive.list_spreadsheets()
+        try:
+            if week < 10:
+                target = 'W0' + str(week)
+            else:
+                target = 'W' + str(week)
+            index = data_sheets.index('S' + str(constants.YEAR) + target)
+            spreadsheet = data_sheets[index]
+        except ValueError:
+            #No data sheet currently available
+            logging.warning('Failed to load data sheet:  ' + spreadsheet)
+            spreadsheet = ''
+
+        data = drive.get_data(spreadsheet, worksheet)
+        if len(data) > 0:
+            last_team = ''
+            over_under = 0
+            for team in data[2][5:]:
+                # Skip day-name labels
+                if 'DAY' in team:
+                    continue
+                # Save the over/under margin
+                if 'OVER' in team:
+                    index = team.index(' ')
+                
+                    over_under = int(team[index:-3])
+                    over_under = (over_under + 0.5)
+                    
+                    margin[last_team] = over_under
+                
+                    continue
+                # Skip total-game-points tally
+                if 'TOTAL' in team:
+                    continue
+
+                # Detect for underdog
+                if team[0] == '_':
+                    spread[team[1:].upper()] = (odds * -1)
+                else:
+                    # Format is: "TEAMNAME-12345 1/2"
+                    deliminator = team.index('-')
+                    
+                    odds = int(team[deliminator:-3])
+                    odds = (odds - 0.5)
+                  
+                    last_team = team[:deliminator].upper()
+                
+                    spread[last_team] = odds
+
+        result['odds'] = spread
+        result['margin'] = margin
+        return result
 
     def _fetch_scores(self):
         response = {}
