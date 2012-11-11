@@ -207,14 +207,15 @@ class MainPage(webapp2.RequestHandler):
 
     def _format_query(self, query):
         result = {}
+        logging.debug(query)
 
         for item in query:
             person = item.person
             if person not in result:
                 result[person] = [
-                    item.team_name,
+                    [item.team_name,
                     item.margin,
-                    item.total_score
+                    item.total_score]
                 ]
             else:
                 # result needs to be array of arrays
