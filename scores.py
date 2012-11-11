@@ -65,7 +65,6 @@ class MainPage(webapp2.RequestHandler):
         target = ''
         worksheet = constants.DEFAULT_WORKSHEET
 
-        week = 9
         # Obtain the correct spread sheet
         data_sheets = drive.list_spreadsheets()
         try:
