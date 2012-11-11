@@ -12,6 +12,6 @@ class Score(db.Model):
     game_status = db.StringProperty()
     game_time = db.StringProperty()
     game_id = db.IntegerProperty()
-    spread_odds = db.FloatProperty()
-    spread_margin = db.FloatProperty()
+    spread_odds = db.FloatProperty(default=0.000)
+    spread_margin = db.FloatProperty(default=0.000)
     timestamp = db.DateTimeProperty()

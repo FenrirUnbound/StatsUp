@@ -35,13 +35,28 @@ class MainPage(webapp2.RequestHandler):
             result = (self._fetch_scores())[constants.SCORES_FETCHED]
             self._save_scores(week, result)            
 
-        #logging.info(self._fetch_odds(week))
+        # Currently a hack; will be pushed into post-endpoint
+        if odds is not None and odds:
+            spread_data = self._fetch_odds(week)
+            self._save_spread(week, spread_data)
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.out.write(json.dumps(result, indent = 4))
-
+        
     # TODO: This
+    # TODO: Accept client-side data
+    def post(self):
+        result = {}
+        week = self.request.get('week')
+        
+        if week is None or len(week) == 0:
+            week = self._get_current_week()
+    
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.out.write(json.dumps(result, indent = 4))
+
     def _fetch_odds(self, week):
         data = {}
         drive = Drive()
@@ -91,7 +106,8 @@ class MainPage(webapp2.RequestHandler):
 
                 # Detect for underdog
                 if team[0] == '_':
-                    spread[team[1:].upper()] = (odds * -1)
+                    last_team = constants.TEAM_NAME[team[1:].upper()]
+                    spread[last_team] = (odds * -1)
                 else:
                     # Format is: "TEAMNAME-12345 1/2"
                     deliminator = team.index('-')
@@ -99,7 +115,7 @@ class MainPage(webapp2.RequestHandler):
                     odds = int(team[deliminator:-3])
                     odds = (odds - 0.5)
                   
-                    last_team = team[:deliminator].upper()
+                    last_team = constants.TEAM_NAME[team[:deliminator].upper()]
                 
                     spread[last_team] = odds
 
@@ -279,6 +295,42 @@ class MainPage(webapp2.RequestHandler):
                 
                 #Push update
                 matchup.put()
+
+    def _save_spread(self, week, spread):
+        margins = spread['margin']
+        odds = spread['odds']
+        query = Score.all()
+        result = {}
+
+        query.filter('week =', week)
+        result = query.fetch(constants.QUERY_LIMIT)
+
+        if len(result) > 0:
+            # By design, we only augment spread-data to existing scores
+            for score in result:
+                key = score.key()
+                matchup = Score.get(key)
+                spread_odds = 0.0
+                spread_margin = 0.0
+                
+                if matchup.home_name in odds:
+                    # Spread is relative to home team
+                    spread_odds = odds[matchup.home_name]
+
+                # Margin is relative only to game, not team
+                if matchup.home_name in margins:
+                    spread_margin = margins[matchup.home_name]
+                elif matchup.away_name in margins:
+                    spread_margin = margins[matchup.away_name]
+
+                # Update
+                matchup.spread_odds = spread_odds
+                matchup.spread_margin = spread_margin
+                
+                # Push update
+                matchup.put()
+
+
 
 app = webapp2.WSGIApplication([('/scores', MainPage)],
                               debug=True)
