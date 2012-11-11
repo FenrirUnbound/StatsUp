@@ -35,7 +35,10 @@ class MainPage(webapp2.RequestHandler):
             result = (self._fetch_scores())[constants.SCORES_FETCHED]
             self._save_scores(week, result)            
 
-        logging.info(self._fetch_odds(week))
+        # Currently a hack; will be pushed into post-endpoint
+        if odds is not None and odds:
+            spread_data = self._fetch_odds(week)
+            self._save_spread(week, spread_data)
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -293,8 +296,41 @@ class MainPage(webapp2.RequestHandler):
                 #Push update
                 matchup.put()
 
-    def _save_spread(self, spread):
-        pass
+    def _save_spread(self, week, spread):
+        margins = spread['margin']
+        odds = spread['odds']
+        query = Score.all()
+        result = {}
+
+        query.filter('week =', week)
+        result = query.fetch(constants.QUERY_LIMIT)
+
+        if len(result) > 0:
+            # By design, we only augment spread-data to existing scores
+            for score in result:
+                key = score.key()
+                matchup = Score.get(key)
+                spread_odds = 0.0
+                spread_margin = 0.0
+                
+                if matchup.home_name in odds:
+                    # Spread is relative to home team
+                    spread_odds = odds[matchup.home_name]
+
+                # Margin is relative only to game, not team
+                if matchup.home_name in margins:
+                    spread_margin = margins[matchup.home_name]
+                elif matchup.away_name in margins:
+                    spread_margin = margins[matchup.away_name]
+
+                # Update
+                matchup.spread_odds = spread_odds
+                matchup.spread_margin = spread_margin
+                
+                # Push update
+                matchup.put()
+
+
 
 app = webapp2.WSGIApplication([('/scores', MainPage)],
                               debug=True)
