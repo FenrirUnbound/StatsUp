@@ -35,13 +35,25 @@ class MainPage(webapp2.RequestHandler):
             result = (self._fetch_scores())[constants.SCORES_FETCHED]
             self._save_scores(week, result)            
 
-        #logging.info(self._fetch_odds(week))
+        logging.info(self._fetch_odds(week))
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.out.write(json.dumps(result, indent = 4))
-
+        
     # TODO: This
+    # TODO: Accept client-side data
+    def post(self):
+        result = {}
+        week = self.request.get('week')
+        
+        if week is None or len(week) == 0:
+            week = self._get_current_week()
+    
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.out.write(json.dumps(result, indent = 4))
+
     def _fetch_odds(self, week):
         data = {}
         drive = Drive()
@@ -53,6 +65,7 @@ class MainPage(webapp2.RequestHandler):
         target = ''
         worksheet = constants.DEFAULT_WORKSHEET
 
+        week = 9
         # Obtain the correct spread sheet
         data_sheets = drive.list_spreadsheets()
         try:
@@ -91,7 +104,8 @@ class MainPage(webapp2.RequestHandler):
 
                 # Detect for underdog
                 if team[0] == '_':
-                    spread[team[1:].upper()] = (odds * -1)
+                    last_team = constants.TEAM_NAME[team[1:].upper()]
+                    spread[last_team] = (odds * -1)
                 else:
                     # Format is: "TEAMNAME-12345 1/2"
                     deliminator = team.index('-')
@@ -99,7 +113,7 @@ class MainPage(webapp2.RequestHandler):
                     odds = int(team[deliminator:-3])
                     odds = (odds - 0.5)
                   
-                    last_team = team[:deliminator].upper()
+                    last_team = constants.TEAM_NAME[team[:deliminator].upper()]
                 
                     spread[last_team] = odds
 
@@ -279,6 +293,9 @@ class MainPage(webapp2.RequestHandler):
                 
                 #Push update
                 matchup.put()
+
+    def _save_spread(self, spread):
+        pass
 
 app = webapp2.WSGIApplication([('/scores', MainPage)],
                               debug=True)
