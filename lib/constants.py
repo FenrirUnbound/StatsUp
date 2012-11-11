@@ -32,6 +32,40 @@ SCORES_FETCHED = 'ss'
 SPREAD_OVER_UNDER = 1
 SPREAD_TEAM_NAME = 0
 SPREAD_TOTAL_SCORE = 2
+TEAM_NAME = {
+    'ARIZONA': 'ARI',
+    'ATLANTA': 'ATL',
+    'BALTIMORE': 'BAL',
+    'BUFFALO': 'BUF',
+    'CAROLINA': 'CAR',
+    'CHICAGO': 'CHI',
+    'CINCINNATI': 'CIN',
+    'CLEVELAND': 'CLE',
+    'DALLAS': 'DAL',
+    'DENVER': 'DEN',
+    'DETROIT': 'DET',
+    'GREEN BAY': 'GB',
+    'HOUSTON': 'HOU',
+    'INDIANAPOLIS': 'IND',
+    'JACKSONVILLE': 'JAC',
+    'KANSAS CITY': 'KC',
+    'MIAMI': 'MIA',
+    'MINNESOTA': 'MIN',
+    'NEW ENGLAND': 'NE',
+    'NEW ORLEANS': 'NO',
+    'NY GIANTS': 'NYG',
+    'NY JETS': 'NYJ',
+    'OAKLAND': 'OAK',
+    'PHILADELPHIA': 'PHI',
+    'PITTSBURGH': 'PIT',
+    'SAN DIEGO': 'SD',
+    'SAN FRANCISCO': 'SF',
+    'SEATTLE': 'SEA',
+    'ST. LOUIS': 'STL',
+    'TAMPA BAY': 'TB',
+    'TENNESSEE': 'TEN',
+    'WASHINGTON': 'WAS'
+}
 THRESHOLD = 5
 TOTAL_TEAMS = 32
 URL_SCOREBOARD = 'http://www.nfl.com/liveupdate/scorestrip/scorestrip.json'
