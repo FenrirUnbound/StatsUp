@@ -5,6 +5,6 @@ class Spread(db.Model):
     week = db.IntegerProperty()
     person = db.StringProperty()
     team_name = db.StringProperty()
-    margin = db.IntegerProperty()
-    total_score = db.IntegerProperty()
+    margin = db.IntegerProperty(default=0)
+    total_score = db.IntegerProperty(default=0)
     
