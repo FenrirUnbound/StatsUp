@@ -69,6 +69,6 @@ TEAM_NAME = {
 THRESHOLD = 5
 TOTAL_TEAMS = 32
 URL_SCOREBOARD = 'http://www.nfl.com/liveupdate/scorestrip/scorestrip.json'
-UTC_OFFSET = -4
+UTC_OFFSET = 5
 WEEK_ONE = datetime.datetime(2012, 9, 6, 0, 0, 0)
 YEAR = 2012
