@@ -148,6 +148,7 @@ class MainPage(webapp2.RequestHandler):
                 while length != text.__len__():
                     length = text.__len__()
                     text = text.replace(',,', ',0,')
+                    text = text.replace('final overtime', 'Final Overtime')
                     
                     # Prevent infinite loops
                     if counter != 0:
