@@ -293,7 +293,7 @@ class MainPage(webapp2.RequestHandler):
                     game_day = game[constants.GAME_DAY].encode('ascii', 
                                                                     'ignore'),
                     game_id = int(game[constants.GAME_ID]),
-                    game_status = _game_status
+                    game_status = _game_status,
                     game_time = game[constants.GAME_TIME],
                     home_name = game[constants.HOME_NAME].encode('ascii',
                                                                     'ignore'),
