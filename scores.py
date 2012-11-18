@@ -216,7 +216,7 @@ class MainPage(webapp2.RequestHandler):
                     game_minute = int(game.game_time[(index+1):])
 
                     # Check if the game has already started
-                    if game_hour > today.hour:
+                    if today.hour > game_hour:
                         # Don't fetch if the game is over
                         if 'Final' in game.game_status:
                             continue
@@ -229,7 +229,7 @@ class MainPage(webapp2.RequestHandler):
                                 minutes=constants.THRESHOLD
                                 ):
                             return True
-                    elif game_hour == today.hour:
+                    elif today.hour == game_hour:
                         if game_minute >= today.minute:
                             # It's hard to believe a game is less than an hour
                             # Check if timestamp is stale
