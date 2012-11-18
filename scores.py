@@ -12,7 +12,10 @@ from lib.drive import Drive
 from models.score import Score
 
 class MainPage(webapp2.RequestHandler):
+    DEBUG = False
+
     def get(self):
+        debug_flag = self.request.get('debug')
         odds = self.request.get('odds')
         result = {}
         to_save = self.request.get('save')
@@ -21,6 +24,11 @@ class MainPage(webapp2.RequestHandler):
         # Check incoming parameters
         if week is None or len(week) == 0:
             week = self._get_current_week()
+        if debug_flag is None or len(debug_flag) == 0:
+            global DEBUG
+            DEBUG = False
+        else:
+            DEBUG = True
 
         # Always do a fresh fetch/save when given given the option
         if to_save is None or len(to_save) == 0:
@@ -183,13 +191,22 @@ class MainPage(webapp2.RequestHandler):
         return ((delta.days / 7) + 1)
 
     def _is_update_required(self, scores):
+        if DEBUG:
+            logging.debug('\"scores\" length:  ' + str(len(scores)))
+        else:
+            logging.debug('No debug statements')
+    
         if len(scores) > 0:
             #Shouldn't update if we're querying an archived week
             if scores[0].week != self._get_current_week():
+                if DEBUG:
+                    logging.debug('Querying an archived week')
                 return False
 
             today = (datetime.datetime.now() - 
                     datetime.timedelta(hours=constants.UTC_OFFSET))
+            if DEBUG:
+                logging.debug('Today-- ' + str(today))
             for game in scores:
                 # today is a gameday
                 if today.weekday() == constants.DAYS[game.game_day.upper()]:
@@ -199,7 +216,7 @@ class MainPage(webapp2.RequestHandler):
                     game_minute = int(game.game_time[(index+1):])
 
                     # Check if the game has already started
-                    if game_hour > today.hour:
+                    if today.hour > game_hour:
                         # Don't fetch if the game is over
                         if 'Final' in game.game_status:
                             continue
@@ -212,7 +229,7 @@ class MainPage(webapp2.RequestHandler):
                                 minutes=constants.THRESHOLD
                                 ):
                             return True
-                    elif game_hour == today.hour:
+                    elif today.hour == game_hour:
                         if game_minute >= today.minute:
                             # It's hard to believe a game is less than an hour
                             # Check if timestamp is stale
@@ -223,9 +240,14 @@ class MainPage(webapp2.RequestHandler):
                                     )
                             if time_delta >= threshold:
                                 return True
+                    elif DEBUG:
+                        logging.debug('Game--Today(Hour):  ' + str(game_hour) +
+                                '--' + str(today.hour))
                 else:
                     # Only update if the timestamp is stale by at least a day
                     if today.weekday() != game.timestamp.weekday():
+                        if DEBUG:
+                            logging.debug('Timestamp > 1day')
                         return True
         else:
             # Query set is empty
