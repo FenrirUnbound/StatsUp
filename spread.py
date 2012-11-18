@@ -21,6 +21,12 @@ class MainPage(webapp2.RequestHandler):
         # Check parameters
         if week is None or len(week) == 0:
             week = self._get_current_week()
+        else:
+            try:
+                week = int(week)
+            except ValueError:
+                logging.warning('Error reading parameter \"week\":  ' + week)
+                week = self._get_current_week()
 
         result = self._query_database(week)
         if result is None or len(result) == 0:
