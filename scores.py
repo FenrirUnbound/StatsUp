@@ -8,10 +8,12 @@ import webapp2
 
 from google.appengine.api import urlfetch
 from google.appengine.ext.webapp.util import run_wsgi_app
+from lib.drive import Drive
 from models.score import Score
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
+        odds = self.request.get('odds')
         result = {}
         to_save = self.request.get('save')
         week = self.request.get('week')
@@ -33,9 +35,93 @@ class MainPage(webapp2.RequestHandler):
             result = (self._fetch_scores())[constants.SCORES_FETCHED]
             self._save_scores(week, result)            
 
+        # Currently a hack; will be pushed into post-endpoint
+        if odds is not None and odds:
+            spread_data = self._fetch_odds(week)
+            self._save_spread(week, spread_data)
+
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.out.write(json.dumps(result, indent = 4))
+        
+    # TODO: This
+    # TODO: Accept client-side data
+    def post(self):
+        result = {}
+        week = self.request.get('week')
+        
+        if week is None or len(week) == 0:
+            week = self._get_current_week()
+    
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.out.write(json.dumps(result, indent = 4))
+
+    def _fetch_odds(self, week):
+        data = {}
+        drive = Drive()
+        margin = {}
+        odds = 0
+        result = {}
+        spread = {}
+        spreadsheet = ''
+        target = ''
+        worksheet = constants.DEFAULT_WORKSHEET
+
+        # Obtain the correct spread sheet
+        data_sheets = drive.list_spreadsheets()
+        try:
+            if week < 10:
+                target = 'W0' + str(week)
+            else:
+                target = 'W' + str(week)
+            index = data_sheets.index('S' + str(constants.YEAR) + target)
+            spreadsheet = data_sheets[index]
+        except ValueError:
+            #No data sheet currently available
+            logging.warning('Failed to load data sheet:  ' + spreadsheet)
+            spreadsheet = ''
+
+        data = drive.get_data(spreadsheet, worksheet)
+        if len(data) > 0:
+            last_team = ''
+            over_under = 0
+            for team in data[2][5:]:
+                # Skip day-name labels
+                if 'DAY' in team:
+                    continue
+                # Save the over/under margin
+                if 'OVER' in team:
+                    index = team.index(' ')
+                
+                    over_under = int(team[index:-3])
+                    over_under = (over_under + 0.5)
+                    
+                    margin[last_team] = over_under
+                
+                    continue
+                # Skip total-game-points tally
+                if 'TOTAL' in team:
+                    continue
+
+                # Detect for underdog
+                if team[0] == '_':
+                    last_team = constants.TEAM_NAME[team[1:].upper()]
+                    spread[last_team] = (odds * -1)
+                else:
+                    # Format is: "TEAMNAME-12345 1/2"
+                    deliminator = team.index('-')
+                    
+                    odds = int(team[deliminator:-3])
+                    odds = (odds - 0.5)
+                  
+                    last_team = constants.TEAM_NAME[team[:deliminator].upper()]
+                
+                    spread[last_team] = odds
+
+        result['odds'] = spread
+        result['margin'] = margin
+        return result
 
     def _fetch_scores(self):
         response = {}
@@ -102,7 +188,8 @@ class MainPage(webapp2.RequestHandler):
             if scores[0].week != self._get_current_week():
                 return False
 
-            today = datetime.datetime.now()
+            today = (datetime.datetime.now() - 
+                    datetime.timedelta(hours=constants.UTC_OFFSET))
             for game in scores:
                 # today is a gameday
                 if today.weekday() == constants.DAYS[game.game_day.upper()]:
@@ -112,7 +199,7 @@ class MainPage(webapp2.RequestHandler):
                     game_minute = int(game.game_time[(index+1):])
 
                     # Check if the game has already started
-                    if game_hour > (today.hour + constants.UTC_OFFSET):
+                    if game_hour > today.hour:
                         # Don't fetch if the game is over
                         if 'Final' in game.game_status:
                             continue
@@ -125,7 +212,7 @@ class MainPage(webapp2.RequestHandler):
                                 minutes=constants.THRESHOLD
                                 ):
                             return True
-                    elif game_hour == (today.hour + constants.UTC_OFFSET):
+                    elif game_hour == today.hour:
                         if game_minute >= today.minute:
                             # It's hard to believe a game is less than an hour
                             # Check if timestamp is stale
@@ -209,6 +296,42 @@ class MainPage(webapp2.RequestHandler):
                 
                 #Push update
                 matchup.put()
+
+    def _save_spread(self, week, spread):
+        margins = spread['margin']
+        odds = spread['odds']
+        query = Score.all()
+        result = {}
+
+        query.filter('week =', week)
+        result = query.fetch(constants.QUERY_LIMIT)
+
+        if len(result) > 0:
+            # By design, we only augment spread-data to existing scores
+            for score in result:
+                key = score.key()
+                matchup = Score.get(key)
+                spread_odds = 0.0
+                spread_margin = 0.0
+                
+                if matchup.home_name in odds:
+                    # Spread is relative to home team
+                    spread_odds = odds[matchup.home_name]
+
+                # Margin is relative only to game, not team
+                if matchup.home_name in margins:
+                    spread_margin = margins[matchup.home_name]
+                elif matchup.away_name in margins:
+                    spread_margin = margins[matchup.away_name]
+
+                # Update
+                matchup.spread_odds = spread_odds
+                matchup.spread_margin = spread_margin
+                
+                # Push update
+                matchup.put()
+
+
 
 app = webapp2.WSGIApplication([('/scores', MainPage)],
                               debug=True)
