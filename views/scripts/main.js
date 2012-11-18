@@ -1,14 +1,10 @@
 var spread = spread || {};
 
 $(document).ready(function() {
-  var dataUrl = 'http://matsumoto26sunday.appspot.com/all',
-      templateName = '',
+  var templateName = '',
       templates = $('script[data-jsv-tmpl]');
 
-  // Get spread data
-  $.when($.get(dataUrl)).done(function(data) {
-    spread.init(data);
-  });
+  spread.init();
 
   // Load templates from DOM
   for(var i = templates.length - 1; i >= 0; i -= 1) {
@@ -17,7 +13,92 @@ $(document).ready(function() {
   }
 });
 
-spread = (function() {
+spread = (function($) {
+  var SCORE_URL = 'http://matsumoto26sunday.appspot.com/scores',
+      SCORES_AWAY_NAME = 4,
+      SCORES_AWAY_SCORE = 5,
+      SCORES_AWAY_TEAM = 0,
+      SCORES_GAME_CLOCK = 3,
+      SCORES_GAME_START_DAY = 0,
+      SCORES_GAME_START_TIME = 1,
+      SCORES_GAME_STATUS = 2,
+      SCORES_HOME_NAME = 6
+      SCORES_HOME_SCORE = 7,
+      SPREAD_URL = 'http://matsumoto26sunday.appspot.com/spread';
+
+  var scores_ = [],
+      spread_ = {};
+
+  function getScores() {
+    return scores_;
+  }
+  
+  function getSpread() {
+    return spread_;
+  }
+
+  function init() {
+    updateScores();
+    fetchSpread_();
+  }
+  
+  function updateScores() {
+    $.get(SCORE_URL)
+        .success(function(scoreData) {
+          scores_ = scoreData;
+          deployScoreboard_(scores_);
+        });
+  }
+  
+  function deployScoreboard_(score) {
+    var current = {},
+        scoreboard = {'scores': []},
+        scoreLength = score.length;
+    
+    score.reverse();
+    for(var i = scoreLength - 1; i >= 0; i -= 1) {
+      current = score[i];
+      
+      scoreboard['scores'].push({
+        'awayName': current[SCORES_AWAY_NAME],
+        'awayScore': current[SCORES_AWAY_SCORE],
+        'favoriteShort': 0,
+        'favoriteLong': 0,
+        'gameClock': current[SCORES_GAME_CLOCK],
+        'gameStatus': current[SCORES_GAME_STATUS],
+        'gameStartDay': current[SCORES_GAME_START_DAY],
+        'gameStartTime': current[SCORES_GAME_START_TIME],
+        'homeName': current[SCORES_HOME_NAME],
+        'homeScore': current[SCORES_HOME_SCORE],
+        'line': 0,
+        'margin': 0,
+        'pickedTeam': '--',
+        'totalScore': 0
+      });
+      
+      //Render the scoreboard
+      $('#gameScores').empty().html(
+        $.render.tmpl_scoreboard(scoreboard)
+      );
+    }
+  }
+  
+  function fetchSpread_() {
+    $.get(SPREAD_URL)
+        .success(function(spreadData) {
+          spread_ = spreadData;
+        });
+  }
+  
+  return {
+    'getScores': getScores,
+    'getSpread': getSpread,
+    'init': init,
+    'updateScores': updateScores
+  }
+})(jQuery);
+
+var old_spread = (function() {
   var AWAY_NAME = 4,
       AWAY_SCORE = 5,
       AWAY_TEAM = 0,
