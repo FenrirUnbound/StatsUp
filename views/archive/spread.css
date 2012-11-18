@@ -66,11 +66,6 @@ section.spreadForm {
     margin: 2.25%;
     padding: 5%;
     text-align: center;
-    width: 31.533333333%;
-}
-
-section.spreadForm form {
-    width: 100%;
 }
 
 select {

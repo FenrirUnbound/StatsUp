@@ -3,13 +3,13 @@ import datetime
 AWAY_NAME = 4
 AWAY_SCORE = 5
 DAYS = {
-    'MON': 1,
-    'TUE': 2,
-    'WED': 3,
-    'THU': 4,
-    'FRI': 5,
-    'SAT': 6,
-    'SUN': 0
+    'MON': 0,
+    'TUE': 1,
+    'WED': 2,
+    'THU': 3,
+    'FRI': 4,
+    'SAT': 5,
+    'SUN': 6
     }
 DEFAULT_WORKSHEET = 'Sheet1'
 GAME_CLOCK = 3
@@ -69,6 +69,6 @@ TEAM_NAME = {
 THRESHOLD = 5
 TOTAL_TEAMS = 32
 URL_SCOREBOARD = 'http://www.nfl.com/liveupdate/scorestrip/scorestrip.json'
-UTC_OFFSET = -4
+UTC_OFFSET = 5
 WEEK_ONE = datetime.datetime(2012, 9, 6, 0, 0, 0)
 YEAR = 2012
