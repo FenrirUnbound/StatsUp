@@ -188,7 +188,8 @@ class MainPage(webapp2.RequestHandler):
             if scores[0].week != self._get_current_week():
                 return False
 
-            today = datetime.datetime.now()
+            today = (datetime.datetime.now() - 
+                    datetime.timedelta(hours=constants.UTC_OFFSET))
             for game in scores:
                 # today is a gameday
                 if today.weekday() == constants.DAYS[game.game_day.upper()]:
@@ -198,7 +199,7 @@ class MainPage(webapp2.RequestHandler):
                     game_minute = int(game.game_time[(index+1):])
 
                     # Check if the game has already started
-                    if game_hour > (today.hour + constants.UTC_OFFSET):
+                    if game_hour > today.hour:
                         # Don't fetch if the game is over
                         if 'Final' in game.game_status:
                             continue
@@ -211,7 +212,7 @@ class MainPage(webapp2.RequestHandler):
                                 minutes=constants.THRESHOLD
                                 ):
                             return True
-                    elif game_hour == (today.hour + constants.UTC_OFFSET):
+                    elif game_hour == today.hour:
                         if game_minute >= today.minute:
                             # It's hard to believe a game is less than an hour
                             # Check if timestamp is stale

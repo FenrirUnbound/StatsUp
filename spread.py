@@ -21,17 +21,22 @@ class MainPage(webapp2.RequestHandler):
         # Check parameters
         if week is None or len(week) == 0:
             week = self._get_current_week()
+        else:
+            try:
+                week = int(week)
+            except ValueError:
+                logging.warning('Error reading parameter \"week\":  ' + week)
+                week = self._get_current_week()
 
         result = self._query_database(week)
         if result is None or len(result) == 0:
             # Need to fetch from spreadsheet
-            result = self._fetch_spreadsheet(spreadsheet, worksheet)
-            # NOTE: only saves spread picks, not odds or magin(ie, over/under)
-            # odds & margin should be saved with scores
-            result = result['spread']
+            result = self._fetch_spreadsheet(week, spreadsheet, worksheet)
+            logging.info(result)
             self._save_spread(week, result)
-
-        result = self._format_query(result)
+        else:
+            # Format the query to be consumable by the client
+            result = self._format_query(result)
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -55,9 +60,19 @@ class MainPage(webapp2.RequestHandler):
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.out.write(json.dumps(result, indent = 4))
 
-    def _fetch_spreadsheet(self, spreadsheet, worksheet):
+    def _delete(self):
+        query = Spread.all()
+        query.filter('week =', str(10))
+        result = query.fetch(1000)
+        
+        for item in result:
+            key = item.key()
+            matchup = Spread.get(key)
+            matchup.delete()
+
+    def _fetch_spreadsheet(self, week, spreadsheet, worksheet):
         current_season = 'S' + str(constants.YEAR)
-        current_week = self._get_current_week()
+        current_week = week
         data = None
         drive = Drive()
         index = 0
@@ -156,6 +171,15 @@ class MainPage(webapp2.RequestHandler):
                         flush = False
             # END: Get each individual's spread choices
 
+        result = selections
+        return result
+
+    def __depreated_fetch_spreadsheet():
+        '''
+        Except for the 'def' and 'if' lines, the renaming is leftover
+        from the origin "_fetch_spreadsheet()" function
+        '''
+        if False:
             # Parse for spread data
             last_team = ''
             over_under = 0
@@ -206,24 +230,28 @@ class MainPage(webapp2.RequestHandler):
         return ((delta.days / 7) + 1)
 
     def _format_query(self, query):
+        '''
+        query --> Assumes to be the results from the Spread DB query
+        '''
         result = {}
 
+        logging.info('formatting query')
         for item in query:
             person = item.person
             if person not in result:
                 result[person] = [
-                    item.team_name,
-                    item.margin,
-                    item.total_score
+                    [item.team_name,
+                    item.over_under,
+                    str(item.total_score)]
                 ]
             else:
                 # result needs to be array of arrays
-                result[item.person].append([
+                result[person].append([
                     item.team_name,
-                    item.margin,
-                    item.total_score
+                    item.over_under,
+                    str(item.total_score)
                     ])
-        
+
         return result
 
     def _query_database(self, week):
