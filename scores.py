@@ -267,6 +267,7 @@ class MainPage(webapp2.RequestHandler):
         return result
 
     def _save_scores(self, week, scores):
+        _game_status = ''
         query = Score.all()
         scorebox = {}
         result = {}
@@ -277,6 +278,11 @@ class MainPage(webapp2.RequestHandler):
         if len(result) <= 0:
             # Completely new save
             for game in scores:
+                _game_status = game[constants.GAME_STATUS]
+                if _game_status == 'final overtime':
+                    # Workaround for formatting regarding overtime games
+                    _game_status = 'Final Overtime'
+                
                 scorebox = Score(
                     year = constants.YEAR,
                     week = week,
@@ -287,7 +293,7 @@ class MainPage(webapp2.RequestHandler):
                     game_day = game[constants.GAME_DAY].encode('ascii', 
                                                                     'ignore'),
                     game_id = int(game[constants.GAME_ID]),
-                    game_status = game[constants.GAME_STATUS],
+                    game_status = _game_status
                     game_time = game[constants.GAME_TIME],
                     home_name = game[constants.HOME_NAME].encode('ascii',
                                                                     'ignore'),
