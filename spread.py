@@ -31,7 +31,7 @@ class MainPage(webapp2.RequestHandler):
         result = self._query_database(week)
         if result is None or len(result) == 0:
             # Need to fetch from spreadsheet
-            result = self._fetch_spreadsheet(spreadsheet, worksheet)
+            result = self._fetch_spreadsheet(week, spreadsheet, worksheet)
             logging.info(result)
             self._save_spread(week, result)
         else:
@@ -70,9 +70,9 @@ class MainPage(webapp2.RequestHandler):
             matchup = Spread.get(key)
             matchup.delete()
 
-    def _fetch_spreadsheet(self, spreadsheet, worksheet):
+    def _fetch_spreadsheet(self, week, spreadsheet, worksheet):
         current_season = 'S' + str(constants.YEAR)
-        current_week = self._get_current_week()
+        current_week = week
         data = None
         drive = Drive()
         index = 0
