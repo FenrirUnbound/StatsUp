@@ -17,6 +17,7 @@ class MainPage(webapp2.RequestHandler):
     def get(self):
         debug_flag = self.request.get('debug')
         odds = self.request.get('odds')
+        query_select = {}
         result = {}
         to_save = self.request.get('save')
         week = self.request.get('week')
@@ -32,16 +33,16 @@ class MainPage(webapp2.RequestHandler):
 
         # Always do a fresh fetch/save when given given the option
         if to_save is None or len(to_save) == 0:
-            result = self._query_scores(week)
-            if self._is_update_required(result):
-                result = (self._fetch_scores())[constants.SCORES_FETCHED]
+            query_select = self._query_scores(week)
+            if self._is_update_required(query_select):
+                result = self._update_scores()
                 self._save_scores(week, result)
             else:
                 # Format the data for client consumption
-                result = self._format_scores(result)
+                result = self._format_scores(query_select)
         else:
-            result = (self._fetch_scores())[constants.SCORES_FETCHED]
-            self._save_scores(week, result)            
+            result = self._update_scores()
+            self._save_scores(week, result)         
 
         # Currently a hack; will be pushed into post-endpoint
         if odds is not None and odds:
@@ -179,7 +180,15 @@ class MainPage(webapp2.RequestHandler):
                 game.away_name,
                 str(game.away_score),
                 game.home_name,
-                str(game.home_score)
+                str(game.home_score),
+                constants.GAME_PADDING,
+                constants.GAME_PADDING,
+                game.game_id,
+                constants.GAME_PADDING,
+                'REG11',    # magic string; we don't know what it is :(
+                game.year,
+                game.spread_margin,
+                game.spread_odds
             ])
 
         return result
@@ -267,24 +276,32 @@ class MainPage(webapp2.RequestHandler):
         return result
 
     def _save_scores(self, week, scores):
+        '''
+        Side-Effect: Appends a game's margin & odds
+        '''
+        current = {}
+        key = None
+        matchup = None
         query = Score.all()
+        query_select = {}
         scorebox = {}
-        result = {}
-
+        right_now = (datetime.datetime.now() - 
+                datetime.timedelta(hours=constants.UTC_OFFSET))
+        
         query.filter('week =', week)
-        result = query.fetch(constants.TOTAL_TEAMS)
+        query_select = query.fetch(constants.TOTAL_TEAMS)
 
-        if len(result) <= 0:
+        if len(query_select) == 0:
             # Completely new save
             for game in scores:
                 scorebox = Score(
-                    year = constants.YEAR,
-                    week = week,
-                    away_name = game[constants.AWAY_NAME].encode('ascii', 
+                    year = int(game[constants.GAME_SEASON]),
+                    week = int(week),
+                    away_name = game[constants.AWAY_NAME].encode('ascii',
                                                                     'ignore'),
                     away_score = int(game[constants.AWAY_SCORE]),
                     game_clock = str(game[constants.GAME_CLOCK]),
-                    game_day = game[constants.GAME_DAY].encode('ascii', 
+                    game_day = game[constants.GAME_DAY].encode('ascii',
                                                                     'ignore'),
                     game_id = int(game[constants.GAME_ID]),
                     game_status = game[constants.GAME_STATUS],
@@ -292,14 +309,15 @@ class MainPage(webapp2.RequestHandler):
                     home_name = game[constants.HOME_NAME].encode('ascii',
                                                                     'ignore'),
                     home_score = int(game[constants.HOME_SCORE]),
-                    timestamp = datetime.datetime.now()
+                    spread_margin = float(game[constants.GAME_SPREAD_MARGIN]),
+                    spread_odds = float(game[constants.GAME_SPREAD_ODDS]),
+                    timestamp = right_now
                     )
-
+                
                 scorebox.put()
         else:
             # Update the scores
-            current = {}
-            for scorebox in result:
+            for scorebox in query_select:
                 # Find the related game score
                 for game in scores:
                     if game[constants.AWAY_NAME] == scorebox.away_name:
@@ -308,15 +326,19 @@ class MainPage(webapp2.RequestHandler):
 
                 key = scorebox.key()
                 matchup = Score.get(key)
-
-                # Update
-                matchup.away_score = int(current[constants.AWAY_SCORE])
-                matchup.home_score = int(current[constants.HOME_SCORE])
-                matchup.game_clock = str(current[constants.GAME_CLOCK])
-                matchup.game_status = current[constants.GAME_STATUS]
-                matchup.timestamp = datetime.datetime.now()
                 
-                #Push update
+                # Update
+                matchup.away_score = int(game[constants.AWAY_SCORE])
+                matchup.game_clock = str(game[constants.GAME_CLOCK])
+                matchup.game_status = game[constants.GAME_STATUS]
+                matchup.home_score = int(game[constants.HOME_SCORE])
+                matchup.timestamp = right_now
+                
+                # Pull margin & odds data while we have the data
+                game[constants.GAME_SPREAD_MARGIN] = matchup.spread_margin
+                game[constants.GAME_SPREAD_ODDS] = matchup.spread_odds
+                
+                # Push update
                 matchup.put()
 
     def _save_spread(self, week, spread):
@@ -353,6 +375,37 @@ class MainPage(webapp2.RequestHandler):
                 # Push update
                 matchup.put()
 
+    def _update_scores(self):
+        game_status = ''
+        result = []
+        scores = (self._fetch_scores())[constants.SCORES_FETCHED]
+        
+        for game in scores:
+            # Fix for proper formatting of games in overtime
+            game_status = game[constants.GAME_STATUS]
+            if game_status == 'final overtime':
+                game_status = 'Final Overtime'
+            
+            result.append([
+                game[constants.GAME_DAY],
+                game[constants.GAME_TIME],
+                game_status,
+                game[constants.GAME_CLOCK],
+                game[constants.AWAY_NAME],
+                game[constants.AWAY_SCORE],
+                game[constants.HOME_NAME],
+                game[constants.HOME_SCORE],
+                constants.GAME_PADDING,
+                constants.GAME_PADDING,
+                game[constants.GAME_ID],
+                constants.GAME_PADDING,
+                game[12],   # magic number; we don't know what it is :(
+                game[constants.GAME_SEASON],
+                constants.GAME_PADDING, # For margin
+                constants.GAME_PADDING  # For odds
+            ])
+
+        return result
 
 
 app = webapp2.WSGIApplication([('/scores', MainPage)],
