@@ -99,10 +99,6 @@ spread = (function($) {
 
     // Load the selector
     $('#selectSpread').html(result);
-    /*
-    // Enable the select button
-    $('#selectButton').click(engageSpread_);
-    */
   }
   
   function fetchSpread_() {
@@ -110,6 +106,9 @@ spread = (function($) {
         .success(function(spreadData) {
           spread_ = spreadData;
           deploySpread_(spread_);
+          
+          // Enable the spread-select button
+          //$('#selectButton').click(engageSpread_);
         });
   }
   
