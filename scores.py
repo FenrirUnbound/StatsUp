@@ -25,9 +25,9 @@ class MainPage(webapp2.RequestHandler):
         if week is None or len(week) == 0:
             week = self._get_current_week()
         if debug_flag is None or len(debug_flag) == 0:
-            global DEBUG
             DEBUG = False
         else:
+            global DEBUG
             DEBUG = True
 
         # Always do a fresh fetch/save when given given the option
