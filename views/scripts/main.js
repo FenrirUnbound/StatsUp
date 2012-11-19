@@ -83,10 +83,33 @@ spread = (function($) {
     }
   }
   
+  function deploySpread_(spread) {
+    var list = [],
+        players = Object.keys(spread).sort().reverse(),
+        playersLength = players.length,
+        result = '';
+
+    for(var i = playersLength - 1; i >= 0; i -= 1) {
+      list.push($.render.tmpl_listoption({
+        'name': players[i],
+        'value': playersLength - i
+      }));
+    }
+    result = list.join('');
+
+    // Load the selector
+    $('#selectSpread').html(result);
+    /*
+    // Enable the select button
+    $('#selectButton').click(engageSpread_);
+    */
+  }
+  
   function fetchSpread_() {
     $.get(SPREAD_URL)
         .success(function(spreadData) {
           spread_ = spreadData;
+          deploySpread_(spread_);
         });
   }
   
