@@ -265,7 +265,7 @@ spread = (function($) {
     }
     result = list.join('');
 
-    // Load the selector
+    // Load the list selector
     $('#selectSpread').html(result);
   }
   
