@@ -238,6 +238,8 @@ class MainPage(webapp2.RequestHandler):
                                 minutes=constants.THRESHOLD
                                 ):
                             return True
+                        elif DEBUG:
+                            logging.debug('Game started; fresh timestamp')
                     elif today.hour == game_hour:
                         if game_minute >= today.minute:
                             # It's hard to believe a game is less than an hour
@@ -249,6 +251,8 @@ class MainPage(webapp2.RequestHandler):
                                     )
                             if time_delta >= threshold:
                                 return True
+                            elif DEBUG:
+                                logging.debug('Game started; fresh timestamp')
                     elif DEBUG:
                         logging.debug('Game--Today(Hour):  ' + str(game_hour) +
                                 '--' + str(today.hour))
