@@ -106,10 +106,13 @@ spread = (function($) {
         current = {},
         index = 0,
         person = $('#selectSpread').find('option:selected').text(),
+        scoreboard = $('#gameScores > article > section:nth-child(1)'),
+        scoreDiff = 0.0,
         scores = getScores(),
         scoresLength = scores.length,
         spreadDetails = $('#gameScores > article > section:nth-child(2)'),
         spreadDetailsIndex = 0,
+        tally = 0,
         teamName = '',
         totalScore = 0;
     
@@ -158,13 +161,66 @@ spread = (function($) {
 
         if(current[index][SPREAD_MARGIN] === 'UN') {
           element.html('Over/<span>Under</span>');
-        }
-        else if(current[index][SPREAD_MARGIN] === 'OV') {
+        } else if(current[index][SPREAD_MARGIN] === 'OV') {
           element.html('<span>Over</span>/Under');
         }
       }
+      
+      // Only calculate spread-line on games that are started
+      if(scores[i][SCORES_GAME_STATUS] === 'Pregame')
+        continue;
+      
+      /*
+       * Highlights
+       */
+
+      // Check for winner
+      // HomeScore + Odds - AwayScore; positive means home wins
+      scoreDiff = parseInt(scores[i][SCORES_HOME_SCORE]) +
+          parseInt(scores[i][SCORES_GAME_LINE]) -
+          parseInt(scores[i][SCORES_AWAY_SCORE]);
+
+      if(scoreDiff > 0 && teamName === scores[i][SCORES_HOME_NAME]) {
+        // Entire scorebox
+        $(scoreboard[i])
+            .removeClass('white')
+            .removeClass('red')
+            .addClass('green');
+        // Spread-details drawer
+        $('#teamChoice > li:nth-child(2)', spreadDetails[spreadDetailsIndex])
+            .removeClass('white')
+            .removeClass('red')
+            .addClass('green');
+
+        tally += 1;
+      } else if(scoreDiff < 0 && teamName === scores[i][SCORES_AWAY_NAME]) {
+        // Entire scorebox
+        $(scoreboard[i])
+            .removeClass('white')
+            .removeClass('red')
+            .addClass('green');
+        // Spread-details drawer
+        $('#teamChoice > li:nth-child(2)', spreadDetails[spreadDetailsIndex])
+            .removeClass('white')
+            .removeClass('red')
+            .addClass('green');
+
+        tally += 1;
+      } else {
+        // Entire scorebox
+        $(scoreboard[i])
+            .removeClass('white')
+            .removeClass('green')
+            .addClass('red');
+        // Spread-details drawer
+        $('#teamChoice > li:nth-child(2)', spreadDetails[spreadDetailsIndex])
+            .removeClass('white')
+            .removeClass('green')
+            .addClass('red');
+      }
     }
     
+    console.log('tally:  ' + tally);
   }
   
   function deploySpread_(spread) {
@@ -208,8 +264,7 @@ spread = (function($) {
         'height': '0px',
         'visibility': 'hidden'
       });
-    }
-    else {
+    } else {
       // Calculate the height of the actual element behind the scenes
       element.css({
         'height': 'auto',
