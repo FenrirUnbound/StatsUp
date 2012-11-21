@@ -19,6 +19,8 @@ spread = (function($) {
       SCORES_AWAY_SCORE = 5,
       SCORES_AWAY_TEAM = 0,
       SCORES_GAME_CLOCK = 3,
+      SCORES_GAME_LINE = 15,
+      SCORES_GAME_MARGIN = 14,
       SCORES_GAME_START_DAY = 0,
       SCORES_GAME_START_TIME = 1,
       SCORES_GAME_STATUS = 2,
@@ -52,26 +54,36 @@ spread = (function($) {
   
   function deployScoreboard_(score) {
     var current = {},
+        favorite = '',
         scoreboard = {'scores': []},
-        scoreLength = score.length;
+        scoreLength = score.length,
+        spreadLine = 0.0;
     
     score.reverse();
     for(var i = scoreLength - 1; i >= 0; i -= 1) {
       current = score[i];
       
+      spreadLine = current[SCORES_GAME_LINE];      
+      if(spreadLine < 0)
+        favorite = current[SCORES_HOME_NAME];
+      else {
+        favorite = current[SCORES_AWAY_NAME];
+        spreadLine *= -1;
+      }
+      
       scoreboard['scores'].push({
         'awayName': current[SCORES_AWAY_NAME],
         'awayScore': current[SCORES_AWAY_SCORE],
-        'favoriteShort': 0,
-        'favoriteLong': 0,
+        'favoriteShort': favorite,
+        'favoriteLong': favorite,
         'gameClock': current[SCORES_GAME_CLOCK],
         'gameStatus': current[SCORES_GAME_STATUS],
         'gameStartDay': current[SCORES_GAME_START_DAY],
         'gameStartTime': current[SCORES_GAME_START_TIME],
         'homeName': current[SCORES_HOME_NAME],
         'homeScore': current[SCORES_HOME_SCORE],
-        'line': 0,
-        'margin': 0,
+        'line': spreadLine,
+        'margin': current[SCORES_GAME_MARGIN],
         'pickedTeam': '--',
         'totalScore': 0
       });
@@ -81,6 +93,11 @@ spread = (function($) {
         $.render.tmpl_scoreboard(scoreboard)
       );
     }
+  }
+  
+  // TODO: This
+  function applySpread_() {
+    return False;
   }
   
   function deploySpread_(spread) {
@@ -108,7 +125,7 @@ spread = (function($) {
           deploySpread_(spread_);
           
           // Enable the spread-select button
-          //$('#selectButton').click(engageSpread_);
+          $('#selectButton').click(applySpread_);
         });
   }
   
