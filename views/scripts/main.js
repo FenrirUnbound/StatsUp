@@ -104,6 +104,7 @@ spread = (function($) {
   function applySpread_() {
     var combinedScore = 0,
         current = {},
+        element = {},
         index = 0,
         person = $('#selectSpread').find('option:selected').text(),
         scoreboard = $('#gameScores > article > section:nth-child(1)'),
@@ -216,6 +217,33 @@ spread = (function($) {
         $('#teamChoice > li:nth-child(2)', spreadDetails[spreadDetailsIndex])
             .removeClass('white')
             .removeClass('green')
+            .addClass('red');
+      }
+
+      // Highlight correct margin
+      if(current[index][SPREAD_MARGIN] === 'UN' &&
+          combinedScore < scores[i][SCORES_GAME_MARGIN]) {
+        // UNDER is successful
+        $('#margin > li:nth-child(2)', spreadDetails[spreadDetailsIndex])
+            .removeClass('red')
+            .removeClass('white')
+            .addClass('green');
+              
+        tally += 1;
+      } else if(current[index][SPREAD_MARGIN] === 'OV' &&
+          combinedScore > scores[i][SCORES_GAME_MARGIN]) {
+        // OVER is successful
+        $('#margin > li:nth-child(2)', spreadDetails[spreadDetailsIndex])
+            .removeClass('red')
+            .removeClass('white')
+            .addClass('green');
+              
+        tally += 1;
+      } else {
+        // Failed margin
+        $('#margin > li:nth-child(2)', spreadDetails[spreadDetailsIndex])
+            .removeClass('green')
+            .removeClass('white')
             .addClass('red');
       }
     }
