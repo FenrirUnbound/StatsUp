@@ -149,6 +149,7 @@ class MainPage(webapp2.RequestHandler):
                 while length != text.__len__():
                     length = text.__len__()
                     text = text.replace(',,', ',0,')
+                    text = text.replace('final overtime', 'Final Overtime')
                     
                     # Prevent infinite loops
                     if counter != 0:
@@ -238,6 +239,8 @@ class MainPage(webapp2.RequestHandler):
                                 minutes=constants.THRESHOLD
                                 ):
                             return True
+                        elif DEBUG:
+                            logging.debug('Game started; fresh timestamp')
                     elif today.hour == game_hour:
                         if game_minute >= today.minute:
                             # It's hard to believe a game is less than an hour
@@ -249,6 +252,8 @@ class MainPage(webapp2.RequestHandler):
                                     )
                             if time_delta >= threshold:
                                 return True
+                            elif DEBUG:
+                                logging.debug('Game started; fresh timestamp')
                     elif DEBUG:
                         logging.debug('Game--Today(Hour):  ' + str(game_hour) +
                                 '--' + str(today.hour))
@@ -280,6 +285,7 @@ class MainPage(webapp2.RequestHandler):
         Side-Effect: Appends a game's margin & odds
         '''
         current = {}
+        _game_status = ''
         key = None
         matchup = None
         query = Score.all()
@@ -294,6 +300,11 @@ class MainPage(webapp2.RequestHandler):
         if len(query_select) == 0:
             # Completely new save
             for game in scores:
+                _game_status = game[constants.GAME_STATUS]
+                if _game_status == 'final overtime':
+                    # Workaround for formatting regarding overtime games
+                    _game_status = 'Final Overtime'
+                
                 scorebox = Score(
                     year = int(game[constants.GAME_SEASON]),
                     week = int(week),
@@ -304,7 +315,7 @@ class MainPage(webapp2.RequestHandler):
                     game_day = game[constants.GAME_DAY].encode('ascii',
                                                                     'ignore'),
                     game_id = int(game[constants.GAME_ID]),
-                    game_status = game[constants.GAME_STATUS],
+                    game_status = _game_status,
                     game_time = game[constants.GAME_TIME],
                     home_name = game[constants.HOME_NAME].encode('ascii',
                                                                     'ignore'),
