@@ -270,7 +270,8 @@ spread = (function($) {
       }
     }
     
-    console.log('tally:  ' + tally);
+    // Update spread tally
+    $('#selectTally').text(tally);
   }
   
   function deploySpread_(spread) {
