@@ -20,6 +20,25 @@ body {
     line-height: 1.5em;
 }
 
+div.loadingBar {
+    border: 2px solid #fff;
+    height: 10px;
+    text-align: left;
+    line-height: 0em;
+    margin-top: 1em;
+    padding: 0px;
+    overflow: hidden;
+}
+
+div.loadingProgressBar {
+    height: 10px;
+    line-height: 0px;
+    margin: 0px;
+    padding: 0px;
+    background-color: #fc6;
+    width: 0%;
+}
+
 label.selectButton {
     border: 3px solid #fff;
     border-radius: 20px;
@@ -38,6 +57,33 @@ section.scorebox {
     border-radius: 11px;
     padding: 1.125%;
     width: 100%;
+}
+
+section.sectionLoading {
+    background: #036; 
+    border: 3px solid #fff;
+    border-radius: 11px;
+    color: #fff;
+    margin: 2.25%;
+    overflow: hidden;
+    padding: 5%;
+    text-align: center;
+    -webkit-transition: all 0.5s ease-out 0s;
+    -moz-transition: all 0.5s ease-out 0s;
+    -o-transition: all 0.5s ease-out 0s;
+    -ms-transition: all 0.5s ease-out 0s;
+    transition: all 0.5s ease-out 0s;
+    width: 31.533333333%;
+}
+
+section.sectionSpread {
+    max-height: 0px;
+    overflow: hidden;
+    -webkit-transition: all 5.0s ease-out 0s;
+    -moz-transition: all 5.0s ease-out 0s;
+    -o-transition: all 5.0s ease-out 0s;
+    -ms-transition: all 5.0s ease-out 0s;
+    transition: all 5.0s ease-out 0s;
 }
 
 section.spreadDetails {
@@ -109,6 +155,10 @@ ul.spreadLine {
     width: 50%;
 }
 
+.clear {
+    clear: both;
+}
+
 .green {
     background: #cfc;
 }
@@ -133,6 +183,13 @@ ul.spreadLine {
         clear: left;
     }
     
+    section.sectionLoading {
+        margin-left: auto;
+        margin-right: auto;
+        padding: 2.25%;
+        width: 31.533333333%;
+    }
+    
     section.spreadForm {
         margin-left: auto;
         margin-right: auto;
@@ -153,6 +210,13 @@ ul.spreadLine {
         clear: left;
     }
     
+    section.sectionLoading {
+        margin-left: auto;
+        margin-right: auto;
+        padding: 2.25%;
+        width: 47.75%;
+    }    
+    
     section.spreadForm {
         margin-left: auto;
         margin-right: auto;
@@ -165,6 +229,12 @@ ul.spreadLine {
     article.scoreboard {
         float: none;
         margin: 2.25%;
+        width: 95.5%;
+    }
+    
+    section.sectionLoading {
+        margin: 2.25%;
+        padding: 5%;
         width: 95.5%;
     }
     
