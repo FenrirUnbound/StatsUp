@@ -86,11 +86,11 @@ section.sectionLoading {
 section.sectionSpread {
     max-height: 0px;
     overflow: hidden;
-    -webkit-transition: all 5.0s ease-out 0s;
-    -moz-transition: all 5.0s ease-out 0s;
-    -o-transition: all 5.0s ease-out 0s;
-    -ms-transition: all 5.0s ease-out 0s;
-    transition: all 5.0s ease-out 0s;
+    -webkit-transition: all 7.5s ease-out 0s;
+    -moz-transition: all 7.5s ease-out 0s;
+    -o-transition: all 7.5s ease-out 0s;
+    -ms-transition: all 7.5s ease-out 0s;
+    transition: all 7.5s ease-out 0s;
 }
 
 section.spreadDetails {
@@ -182,7 +182,7 @@ ul.spreadLine {
 @media (min-width: 920px) {
     article.scoreboard {
         float: left;
-        margin: 0.9%;
+        margin: 0.45% 0.9%;
         width: 31.533333333%;
     }
     
@@ -200,7 +200,7 @@ ul.spreadLine {
     section.spreadForm {
         margin-left: auto;
         margin-right: auto;
-        padding: 2.25%;
+        padding: 1.0% 1.25%;
         width: 31.533333333%;
     }
 }
@@ -227,7 +227,7 @@ ul.spreadLine {
     section.spreadForm {
         margin-left: auto;
         margin-right: auto;
-        padding: 2.25%;
+        padding: 1.25% 2.25%;
         width: 47.75%;
     }
 }
@@ -247,7 +247,7 @@ ul.spreadLine {
     
     section.spreadForm {
         margin: 2.25%;
-        padding: 5%;
+        padding: 2.5% 5%;
         width: 95.5%;
     }
 }
