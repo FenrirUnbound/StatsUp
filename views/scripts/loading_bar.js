@@ -13,18 +13,22 @@ loading_bar = (function() {
     return true;
   }
   
-  function loaded_() {
-    loadedFiles += 1;
+  function loaded() {
+    loadedFiles_ += 1;
     setValue_(loadedFiles_ * 100 / totalFiles_);
     
     // Are all the files loaded?
     if(loadedFiles_ === totalFiles_)
-      setTimeout('myBar.hide()', 300);
+      setTimeout('loading_bar.hide()', 300);
+  }
+  
+  function hide() {
+    document.getElementById('loadingSection').style.visibility = 'hidden';
   }
   
   // Center in the screen
   function locate_() {
-    var loadingZone = document.getElementById('loadingZone'),
+    var loadingZone = document.getElementById('loadingSection'),
         popupHeight = loadingZone.clientHeight,
         popupWidth = loadingZone.clientWidth,
         windowHeight = document.documentElement.clientHeight,
@@ -37,19 +41,21 @@ loading_bar = (function() {
   
   // Set the bottom text value
   function setAction_(action) {
-    document.getElementById('infoLoading').innerHTML = action;
+    document.getElementById('loadingInfo').innerHTML = action;
   }
   
   // Set the value position of the bar (Only 0-100 values allowed)
   function setValue_(value) {
     if(value >= 0 && value <= 100) {
-      document.getElementById('progressBar').style.width = value + '%';
-      document.getElementById('infoProgress').innerHTML = parseInt(value) + '%';
+      document.getElementById('loadingProgressBar').style.width = value + '%';
+      document.getElementById('loadingProgress').innerHTML = parseInt(value) + '%';
     }
   }
 
   return {
+    'hide': hide,
     'init': init,
+    'loaded': loaded,
     'run': run
   }
 })();
