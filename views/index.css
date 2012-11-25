@@ -65,13 +65,25 @@ section.sectionLoading {
     border-radius: 11px;
     color: #fff;
     margin: 2.25%;
+    overflow: hidden;
     padding: 5%;
     text-align: center;
+    -webkit-transition: all 0.5s ease-out 0s;
+    -moz-transition: all 0.5s ease-out 0s;
+    -o-transition: all 0.5s ease-out 0s;
+    -ms-transition: all 0.5s ease-out 0s;
+    transition: all 0.5s ease-out 0s;
     width: 31.533333333%;
 }
 
 section.sectionSpread {
-    display: none;
+    max-height: 0px;
+    overflow: hidden;
+    -webkit-transition: all 5.0s ease-out 0s;
+    -moz-transition: all 5.0s ease-out 0s;
+    -o-transition: all 5.0s ease-out 0s;
+    -ms-transition: all 5.0s ease-out 0s;
+    transition: all 5.0s ease-out 0s;
 }
 
 section.spreadDetails {

@@ -15,7 +15,8 @@ $(document).ready(function() {
 });
 
 spread = (function($) {
-  var DEPENDENCIES = 2,
+  var BIG_NUMBER = 9001,
+      DEPENDENCIES = 2,
       SCORE_URL = 'http://matsumoto26sunday.appspot.com/scores',
       SCORES_AWAY_NAME = 4,
       SCORES_AWAY_SCORE = 5,
@@ -60,7 +61,7 @@ spread = (function($) {
         }).
         complete(function() {
           if(opt_loadingBar !== undefined)
-            opt_loadingBar.itemLoaded();
+            opt_loadingBar.itemLoaded(showAll);
         });
   }
   
@@ -108,6 +109,18 @@ spread = (function($) {
       // Enable expansion of spread details
       $('ul#expandSpreadDetails').click(scoreboardDrawer_);
     }
+  }
+  
+  function showAll() {
+    // Cannot tell if this makes not-so loose coupling
+    $('#sectionLoading').css({
+      'display': 'none'
+    });
+  
+    $('#sectionSpread').css({
+      'max-height': BIG_NUMBER + 'px',
+      'visibility': 'visible'
+    });
   }
   
   function applySpread_() {
@@ -289,7 +302,7 @@ spread = (function($) {
         })
         .complete(function() {
           if(opt_loadingBar !== undefined)
-            opt_loadingBar.itemLoaded();
+            opt_loadingBar.itemLoaded(showAll);
         });
   }
   
@@ -330,6 +343,7 @@ spread = (function($) {
     'getScores': getScores,
     'getSpread': getSpread,
     'init': init,
+    'showAll': showAll,
     'updateScores': updateScores
   }
 })(jQuery);
@@ -345,19 +359,26 @@ loadingBar = (function() {
     value_ = 0;
   }
   
-  function itemLoaded() {
+  function itemLoaded(opt_complete) {
     loadedFiles_ += 1;
     setValue_(loadedFiles_ * 100 / totalFiles_);
     
     // Are all the files loaded?
     if(loadedFiles_ === totalFiles_) {
-      setTimeout('loadingBar.hide()', 1000);
+      setTimeout(function() { hide(); }, 500);
+      
+      if(opt_complete !== undefined)
+        setTimeout(function() { opt_complete(); }, 1000);
     }
   }
   
   function hide() {
-    document.getElementById('sectionLoading').style.display = 'none';
-    document.getElementById('sectionSpread').style.display = 'block';
+    var loadingBox = document.getElementById('sectionLoading');
+
+    loadingBox.style.height = '0px';
+    loadingBox.style.padding = '0px';
+    loadingBox.style.borderWidth = '0px';
+    loadingBox.style.visibility = 'hidden';
   }
   
   function reset() {
@@ -368,14 +389,17 @@ loadingBar = (function() {
   // Set the value position of the bar (Only 0-100 values allowed)
   function setValue_(value) {
     if(value >= 0 && value <= 100) {
-      document.getElementById('loadingProgressBar').style.width = value + '%';
-      document.getElementById('loadingProgress').innerHTML = parseInt(value) + '%';
+      document.getElementById('loadingProgressBar')
+          .style.width = value + '%';
+      document.getElementById('loadingProgress')
+          .innerHTML = parseInt(value) + '%';
     }
   }
 
   return {
     'hide': hide,
     'init': init,
-    'itemLoaded': itemLoaded
+    'itemLoaded': itemLoaded,
+    'reset': reset
   }
 })();
