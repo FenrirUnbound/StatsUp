@@ -7,24 +7,36 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">      
     </head>
     <body>
-        <!-- Player spread selection -->
-        <section class="spreadForm">
-            <form>
-                <fieldset id="spread">
-                    <ul>
-                        <li>
-                            <select id="selectSpread"></select>
-                        </li>
-                        <li>
-                            <label id="selectButton" class="selectButton">Select</label>
-                        </li>
-                    </ul>
-                </fieldset>
-            </form>
+
+        <section class="sectionLoading" id="sectionLoading">
+            <ul class="hbox">
+                <li id="loadingText">LOADING</li>
+                <li id="loadingProgress">0%</li>
+            </ul>
+            <div class="loadingBar" id="loadingBar">
+                <div class="loadingProgressBar" id="loadingProgressBar">&nbsp;</div>
+            </div>
         </section>
+
+        <section class="sectionSpread" id="sectionSpread">
+            <!-- Player spread selection -->
+            <section class="spreadForm">
+                <form>
+                    <fieldset id="spread">
+                        <ul>
+                            <li>
+                                <select id="selectSpread"></select>
+                            </li>
+                            <li>
+                                <label id="selectButton" class="selectButton">Select</label>
+                            </li>
+                        </ul>
+                    </fieldset>
+                </form>
+            </section>
         
-        <!-- Array of game scoreboxes-->
-        <section id="gameScores">
+            <!-- Array of game scoreboxes-->
+            <section id="gameScores"></section>
         </section>
         
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>

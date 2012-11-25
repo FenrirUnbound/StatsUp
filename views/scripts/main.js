@@ -1,10 +1,11 @@
-var spread = spread || {};
+var loadingBar = loadingBar || {},
+    spread = spread || {};
 
 $(document).ready(function() {
   var templateName = '',
       templates = $('script[data-jsv-tmpl]');
 
-  spread.init();
+  spread.init(loadingBar);
 
   // Load templates from DOM
   for(var i = templates.length - 1; i >= 0; i -= 1) {
@@ -14,7 +15,9 @@ $(document).ready(function() {
 });
 
 spread = (function($) {
-  var SCORE_URL = 'http://matsumoto26sunday.appspot.com/scores',
+  var BIG_NUMBER = 9001,
+      DEPENDENCIES = 2,
+      SCORE_URL = 'http://matsumoto26sunday.appspot.com/scores',
       SCORES_AWAY_NAME = 4,
       SCORES_AWAY_SCORE = 5,
       SCORES_AWAY_TEAM = 0,
@@ -42,16 +45,23 @@ spread = (function($) {
     return spread_;
   }
 
-  function init() {
-    updateScores();
-    fetchSpread_();
+  function init(opt_loadingBar) {
+    if(opt_loadingBar !== undefined)
+      opt_loadingBar.init(DEPENDENCIES);
+  
+    updateScores(opt_loadingBar);
+    fetchSpread_(opt_loadingBar);
   }
   
-  function updateScores() {
+  function updateScores(opt_loadingBar) {
     $.get(SCORE_URL)
         .success(function(scoreData) {
           scores_ = scoreData;
           deployScoreboard_(scores_);
+        }).
+        complete(function() {
+          if(opt_loadingBar !== undefined)
+            opt_loadingBar.itemLoaded(showAll);
         });
   }
   
@@ -99,6 +109,18 @@ spread = (function($) {
       // Enable expansion of spread details
       $('ul#expandSpreadDetails').click(scoreboardDrawer_);
     }
+  }
+  
+  function showAll() {
+    // Cannot tell if this makes not-so loose coupling
+    $('#sectionLoading').css({
+      'display': 'none'
+    });
+  
+    $('#sectionSpread').css({
+      'max-height': BIG_NUMBER + 'px',
+      'visibility': 'visible'
+    });
   }
   
   function applySpread_() {
@@ -269,7 +291,7 @@ spread = (function($) {
     $('#selectSpread').html(result);
   }
   
-  function fetchSpread_() {
+  function fetchSpread_(opt_loadingBar) {
     $.get(SPREAD_URL)
         .success(function(spreadData) {
           spread_ = spreadData;
@@ -277,6 +299,10 @@ spread = (function($) {
           
           // Enable the spread-select button
           $('#selectButton').click(applySpread_);
+        })
+        .complete(function() {
+          if(opt_loadingBar !== undefined)
+            opt_loadingBar.itemLoaded(showAll);
         });
   }
   
@@ -317,6 +343,63 @@ spread = (function($) {
     'getScores': getScores,
     'getSpread': getSpread,
     'init': init,
+    'showAll': showAll,
     'updateScores': updateScores
   }
 })(jQuery);
+
+loadingBar = (function() {
+  var loadedFiles_ = 0,
+      totalFiles_ = 0,
+      value_ = 0;
+
+  function init(totalFiles) {
+    loadedFiles_ = 0;
+    totalFiles_ = totalFiles;
+    value_ = 0;
+  }
+  
+  function itemLoaded(opt_complete) {
+    loadedFiles_ += 1;
+    setValue_(loadedFiles_ * 100 / totalFiles_);
+    
+    // Are all the files loaded?
+    if(loadedFiles_ === totalFiles_) {
+      setTimeout(function() { hide(); }, 500);
+      
+      if(opt_complete !== undefined)
+        setTimeout(function() { opt_complete(); }, 1000);
+    }
+  }
+  
+  function hide() {
+    var loadingBox = document.getElementById('sectionLoading');
+
+    loadingBox.style.height = '0px';
+    loadingBox.style.padding = '0px';
+    loadingBox.style.borderWidth = '0px';
+    loadingBox.style.visibility = 'hidden';
+  }
+  
+  function reset() {
+    init(totalFiles_);
+    setValue_(value_);
+  }
+  
+  // Set the value position of the bar (Only 0-100 values allowed)
+  function setValue_(value) {
+    if(value >= 0 && value <= 100) {
+      document.getElementById('loadingProgressBar')
+          .style.width = value + '%';
+      document.getElementById('loadingProgress')
+          .innerHTML = parseInt(value) + '%';
+    }
+  }
+
+  return {
+    'hide': hide,
+    'init': init,
+    'itemLoaded': itemLoaded,
+    'reset': reset
+  }
+})();
