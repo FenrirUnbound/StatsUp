@@ -121,6 +121,60 @@ ul.spreadLine {
     background: #fff;
 }
 
+/**************   NEW   ******************/
+
+section#sectionSpread {
+    visibility: hidden;
+}
+
+.clear {
+    clear: both;
+}
+
+#loadingSection {
+    margin: 0 auto;
+    text-align: center;
+    width: 85%;
+}
+
+#loadingBar {
+    border: 1px solid #c2c2c2;
+    height: 4px;
+    text-align: left;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#loadingProgressBar {
+    height: 20px;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+    background-color: #bef83d;
+    width: 0%;
+}
+
+#loadingText {
+    color: #6ea1fa;
+    float: left;
+    padding: 10px 2px;
+}
+
+#loadingProgress {
+    color: #6ea1fa;
+    float: right;
+    padding: 10px 2px;
+}
+
+#loadingInfo {
+padding:10px;  
+color:#b9b9b9;  
+font-size:10px;
+}
+/**************   NEW   ******************/
+
 /* Media Query for screen size */
 @media (min-width: 920px) {
     article.scoreboard {

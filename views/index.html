@@ -7,29 +7,42 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">      
     </head>
     <body>
-        <!-- Player spread selection -->
-        <section class="spreadForm">
-            <form>
-                <fieldset id="spread">
-                    <ul>
-                        <li>
-                            <select id="selectSpread"></select>
-                        </li>
-                        <li>
-                            <label id="selectButton" class="selectButton">Select</label>
-                        </li>
-                    </ul>
-                </fieldset>
-            </form>
+
+        <section id="loadingSection">
+            <div id="loadingText">LOADING</div>
+            <div id="loadingProgress">0%</div>
+            <br class="clear" />
+            <div id="loadingBar">
+                <div id="loadingProgressBar">&nbsp;</div>
+            </div>
+            <div id="loadingInfo"></div>
         </section>
+
+        <section id="sectionSpread">
+            <!-- Player spread selection -->
+            <section class="spreadForm">
+                <form>
+                    <fieldset id="spread">
+                        <ul>
+                            <li>
+                                <select id="selectSpread"></select>
+                            </li>
+                            <li>
+                                <label id="selectButton" class="selectButton">Select</label>
+                            </li>
+                        </ul>
+                    </fieldset>
+                </form>
+            </section>
         
-        <!-- Array of game scoreboxes-->
-        <section id="gameScores">
+            <!-- Array of game scoreboxes-->
+            <section id="gameScores"></section>
         </section>
         
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
         <script type="text/javascript" src="./scripts/jsrender/jsrender.js"></script>
         <script text="text/javascript" src="./scripts/main.js"></script>
+        <script text="text/javascript" src="./scripts/loading_bar.js"></script>
         <!-- jsRender templates -->
         <script id="tmpl_scoreboard" type="text/x-jsrender" data-jsv-tmpl="tmpl_scoreboard">
             {{for scores tmpl='#tmpl_scorebox'/}}
