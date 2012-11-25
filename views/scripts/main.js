@@ -205,7 +205,7 @@ spread = (function($) {
 
       if(scoreDiff > 0 && teamName === scores[i][SCORES_HOME_NAME]) {
         // Entire scorebox
-        $(scoreboard[i])
+        $(scoreboard[spreadDetailsIndex])
             .removeClass('white')
             .removeClass('red')
             .addClass('green');
@@ -218,7 +218,7 @@ spread = (function($) {
         tally += 1;
       } else if(scoreDiff < 0 && teamName === scores[i][SCORES_AWAY_NAME]) {
         // Entire scorebox
-        $(scoreboard[i])
+        $(scoreboard[spreadDetailsIndex])
             .removeClass('white')
             .removeClass('red')
             .addClass('green');
@@ -231,7 +231,7 @@ spread = (function($) {
         tally += 1;
       } else {
         // Entire scorebox
-        $(scoreboard[i])
+        $(scoreboard[spreadDetailsIndex])
             .removeClass('white')
             .removeClass('green')
             .addClass('red');
