@@ -200,7 +200,7 @@ ul.spreadLine {
     section.spreadForm {
         margin-left: auto;
         margin-right: auto;
-        padding: 2.25%;
+        padding: 1.0% 1.25% 1.25% 1.25%;
         width: 31.533333333%;
     }
 }
@@ -227,7 +227,7 @@ ul.spreadLine {
     section.spreadForm {
         margin-left: auto;
         margin-right: auto;
-        padding: 2.25%;
+        padding: 1.25% 2.25% 1.25% 2.25%;
         width: 47.75%;
     }
 }
@@ -247,7 +247,7 @@ ul.spreadLine {
     
     section.spreadForm {
         margin: 2.25%;
-        padding: 5%;
+        padding: 2.5% 5% 2.5% 5%;
         width: 95.5%;
     }
 }
