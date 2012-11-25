@@ -86,11 +86,11 @@ section.sectionLoading {
 section.sectionSpread {
     max-height: 0px;
     overflow: hidden;
-    -webkit-transition: all 5.0s ease-out 0s;
-    -moz-transition: all 5.0s ease-out 0s;
-    -o-transition: all 5.0s ease-out 0s;
-    -ms-transition: all 5.0s ease-out 0s;
-    transition: all 5.0s ease-out 0s;
+    -webkit-transition: all 7.5s ease-out 0s;
+    -moz-transition: all 7.5s ease-out 0s;
+    -o-transition: all 7.5s ease-out 0s;
+    -ms-transition: all 7.5s ease-out 0s;
+    transition: all 7.5s ease-out 0s;
 }
 
 section.spreadDetails {
