@@ -20,6 +20,25 @@ body {
     line-height: 1.5em;
 }
 
+div.loadingBar {
+    border: 2px solid #fff;
+    height: 10px;
+    text-align: left;
+    line-height: 0em;
+    margin-top: 1em;
+    padding: 0px;
+    overflow: hidden;
+}
+
+div.loadingProgressBar {
+    height: 10px;
+    line-height: 0px;
+    margin: 0px;
+    padding: 0px;
+    background-color: #fc6;
+    width: 0%;
+}
+
 label.selectButton {
     border: 3px solid #fff;
     border-radius: 20px;
@@ -38,6 +57,21 @@ section.scorebox {
     border-radius: 11px;
     padding: 1.125%;
     width: 100%;
+}
+
+section.sectionLoading {
+    background: #036; 
+    border: 3px solid #fff;
+    border-radius: 11px;
+    color: #fff;
+    margin: 2.25%;
+    padding: 5%;
+    text-align: center;
+    width: 31.533333333%;
+}
+
+section.sectionSpread {
+    display: none;
 }
 
 section.spreadDetails {
@@ -109,6 +143,10 @@ ul.spreadLine {
     width: 50%;
 }
 
+.clear {
+    clear: both;
+}
+
 .green {
     background: #cfc;
 }
@@ -121,60 +159,6 @@ ul.spreadLine {
     background: #fff;
 }
 
-/**************   NEW   ******************/
-
-section#sectionSpread {
-    visibility: hidden;
-}
-
-.clear {
-    clear: both;
-}
-
-#loadingSection {
-    margin: 0 auto;
-    text-align: center;
-    width: 85%;
-}
-
-#loadingBar {
-    border: 1px solid #c2c2c2;
-    height: 4px;
-    text-align: left;
-    line-height: 0;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-
-#loadingProgressBar {
-    height: 20px;
-    line-height: 0;
-    margin: 0;
-    padding: 0;
-    background-color: #bef83d;
-    width: 0%;
-}
-
-#loadingText {
-    color: #6ea1fa;
-    float: left;
-    padding: 10px 2px;
-}
-
-#loadingProgress {
-    color: #6ea1fa;
-    float: right;
-    padding: 10px 2px;
-}
-
-#loadingInfo {
-padding:10px;  
-color:#b9b9b9;  
-font-size:10px;
-}
-/**************   NEW   ******************/
-
 /* Media Query for screen size */
 @media (min-width: 920px) {
     article.scoreboard {
@@ -185,6 +169,13 @@ font-size:10px;
     
     article.scoreboard:nth-child(3n+1) {
         clear: left;
+    }
+    
+    section.sectionLoading {
+        margin-left: auto;
+        margin-right: auto;
+        padding: 2.25%;
+        width: 31.533333333%;
     }
     
     section.spreadForm {
@@ -207,6 +198,13 @@ font-size:10px;
         clear: left;
     }
     
+    section.sectionLoading {
+        margin-left: auto;
+        margin-right: auto;
+        padding: 2.25%;
+        width: 47.75%;
+    }    
+    
     section.spreadForm {
         margin-left: auto;
         margin-right: auto;
@@ -219,6 +217,12 @@ font-size:10px;
     article.scoreboard {
         float: none;
         margin: 2.25%;
+        width: 95.5%;
+    }
+    
+    section.sectionLoading {
+        margin: 2.25%;
+        padding: 5%;
         width: 95.5%;
     }
     
