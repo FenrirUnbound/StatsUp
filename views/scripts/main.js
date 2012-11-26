@@ -241,6 +241,26 @@ spread = (function($) {
             .removeClass('green')
             .addClass('red');
       }
+      
+      // Highlight if score is within scoring range
+      if(totalScore >= (combinedScore - 3) &&
+          totalScore <= (combinedScore + 3)) {
+        $('#totalScore > li:nth-child(2)', spreadDetails[spreadDetailsIndex])
+            .removeClass('red')
+            .removeClass('white')
+            .addClass('green');
+
+        tally += 1;
+        // Extra point for getting exact total score.
+        if(totalScore == combinedScore)
+          tally += 1;    
+      }
+      else {
+        $('#totalScore > li:nth-child(2)', spreadDetails[spreadDetailsIndex])
+            .removeClass('white')
+            .removeClass('green')
+            .addClass('red');
+      }
 
       // Highlight correct margin
       if(current[index][SPREAD_MARGIN] === 'UN' &&
