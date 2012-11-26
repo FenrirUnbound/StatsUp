@@ -6,6 +6,7 @@ import lib.constants as constants
 import logging
 import webapp2
 
+from google.appengine.api import memcache
 from google.appengine.ext.webapp.util import run_wsgi_app
 from lib.drive import Drive
 from models.score import Score
@@ -28,15 +29,22 @@ class MainPage(webapp2.RequestHandler):
                 logging.warning('Error reading parameter \"week\":  ' + week)
                 week = self._get_current_week()
 
-        result = self._query_database(week)
-        if result is None or len(result) == 0:
-            # Need to fetch from spreadsheet
-            result = self._fetch_spreadsheet(week, spreadsheet, worksheet)
-            logging.info(result)
-            self._save_spread(week, result)
-        else:
-            # Format the query to be consumable by the client
-            result = self._format_query(result)
+        # Check Memcache
+        result = self._get_memcache(week)
+        if result is None:
+            # Query the database
+            result = self._query_database(week)
+
+            if result is None or len(result) == 0:
+                # Fetch from spreadsheet
+                result = self._fetch_spreadsheet(week)
+                self._save_spread(week, result)
+            else:
+                # Format the query to be consumable by the client
+                result = self._format_query(result)
+
+            # Save to memcache
+            self._add_memcache(week, json.dumps(result))
 
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -60,9 +68,21 @@ class MainPage(webapp2.RequestHandler):
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.out.write(json.dumps(result, indent = 4))
 
+    def _add_memcache(self, week, result):
+        status = memcache.add(
+                self._get_tagline(week),
+                result,
+                constants.SECONDS_IN_DAY
+                )
+
+        if status:
+            return True
+        else:
+            logging.warning('Memcache add failed.')
+
     def _delete(self):
         query = Spread.all()
-        query.filter('week =', str(10))
+        query.filter('week =', str(12))
         result = query.fetch(1000)
         
         for item in result:
@@ -70,9 +90,7 @@ class MainPage(webapp2.RequestHandler):
             matchup = Spread.get(key)
             matchup.delete()
 
-    def _fetch_spreadsheet(self, week, spreadsheet, worksheet):
-        current_season = 'S' + str(constants.YEAR)
-        current_week = week
+    def _fetch_spreadsheet(self, week):
         data = None
         drive = Drive()
         index = 0
@@ -82,31 +100,23 @@ class MainPage(webapp2.RequestHandler):
         result = {}
         selections = {}
         spread = {}
+        spreadsheet = ''
+        tagline = self._get_tagline(week)
         target = ''
         team_name = ''
         total_score = 0
         
-        # Default values
-        if spreadsheet is None or len(spreadsheet) == 0:
-            # Format for single-digit & double-digit week numbers
-            if current_week < 10:
-                target = 'W0' + str(current_week)
-            else:
-                target = 'W' + str(current_week)
+        data_sheets = drive.list_spreadsheets()
+        try:
+            index = data_sheets.index(tagline)
+            spreadsheet = data_sheets[index]
+        except ValueError:
+            # No data sheet currently available
+            logging.warning('Failed to load data sheet:  ' + spreadsheet +
+                    '(' + worksheet + ')')
+            spreadsheet = ''
 
-            data_sheets = drive.list_spreadsheets()
-            try:
-                index = data_sheets.index(current_season + target)
-                spreadsheet = data_sheets[index]
-            except ValueError:
-                # No data sheet currently available
-                logging.warning('Failed to load data sheet:  ' + spreadsheet +
-                        '(' + worksheet + ')')
-                spreadsheet = ''
-        if worksheet is None or len(worksheet) == 0:
-            worksheet = constants.DEFAULT_WORKSHEET
-
-        data = drive.get_data(spreadsheet, worksheet)
+        data = drive.get_data(spreadsheet, constants.DEFAULT_WORKSHEET)
         if len(data) > 0:
             # START: Get each individual's spread choices
             for i in data:
@@ -222,20 +232,12 @@ class MainPage(webapp2.RequestHandler):
         
         return result
 
-
-    def _get_current_week(self):
-        current = datetime.datetime.now()
-        delta = current - constants.WEEK_ONE
-        
-        return ((delta.days / 7) + 1)
-
     def _format_query(self, query):
         '''
         query --> Assumes to be the results from the Spread DB query
         '''
         result = {}
 
-        logging.info('formatting query')
         for item in query:
             person = item.person
             if person not in result:
@@ -253,6 +255,33 @@ class MainPage(webapp2.RequestHandler):
                     ])
 
         return result
+
+    def _get_current_week(self):
+        current = datetime.datetime.now()
+        delta = current - constants.WEEK_ONE
+        
+        return ((delta.days / 7) + 1)
+
+    def _get_memcache(self, week):
+        result = None
+        
+        result = memcache.get(self._get_tagline(week))
+        if result is not None and len(result) > 0:
+            return json.loads(result)
+        else:
+            return None
+
+    def _get_tagline(self, week):
+        current_season = 'S' + str(constants.YEAR)
+        current_week = ''
+        
+        # Format for single-digit & double-digit week numbers
+        if week < 10:
+            current_week = 'W0' + str(week)
+        else:
+            current_week = 'W' + str(week)
+    
+        return (current_season + current_week)
 
     def _query_database(self, week):
         query = {}
