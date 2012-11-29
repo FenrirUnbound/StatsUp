@@ -105,6 +105,7 @@ class MainPage(webapp2.RequestHandler):
         target = ''
         team_name = ''
         total_score = 0
+        worksheet = constants.DEFAULT_WORKSHEET
         
         data_sheets = drive.list_spreadsheets()
         try:
@@ -116,7 +117,7 @@ class MainPage(webapp2.RequestHandler):
                     '(' + worksheet + ')')
             spreadsheet = ''
 
-        data = drive.get_data(spreadsheet, constants.DEFAULT_WORKSHEET)
+        data = drive.get_data(spreadsheet, worksheet)
         if len(data) > 0:
             # START: Get each individual's spread choices
             for i in data:
